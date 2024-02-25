@@ -1,0 +1,19 @@
+[
+    {
+        "file":     "ifthenelse1.imp",
+        "input":    ["if true then 8"],
+        "output":   ["8"]
+    },
+    {
+        "file":     "ifthenelse2.imp",
+        "input":    ["if true then 8 else 14"],
+        "output":   ["14"]
+    },
+    {
+        "file":     "ifthenelse3.imp",
+        "input":    ["if 3 < 4 then false"],
+        "output":   ["false"]
+    }
+    ]
+    
+    
