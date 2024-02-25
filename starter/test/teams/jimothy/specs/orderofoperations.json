@@ -1,0 +1,38 @@
+[
+{
+    "file":     "orderofoperations1.imp",
+    "input":    ["6 + 4 - 2"],
+    "output":   ["8"]
+},
+{
+    "file":     "orderofoperations2.imp",
+    "input":    ["6 + 4 * 2"],
+    "output":   ["14"]
+},
+{
+    "file":     "orderofoperations3.imp",
+    "input":    ["6 * 3 / 2 + 1"],
+    "output":   ["10"]
+},
+{
+    "file":     "orderofoperations4.imp",
+    "input":    ["6 * (4 - 2) - 3 * 2"],
+    "output":   ["6"]
+},
+{
+    "file":     "orderofoperations5.imp",
+    "input":    ["true && false"],
+    "output":   ["false"]
+},
+{
+    "file":     "orderofoperations6.imp",
+    "input":    ["true && (false || true) || false"],
+    "output":   ["true"]
+},
+{
+    "file":     "orderofoperations7.imp",
+    "input":    ["false || (true && false)"],
+    "output":   ["false"]
+}
+]
+
