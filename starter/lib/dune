@@ -1,9 +1,0 @@
-(library
- (name imp)
- (preprocess (pps ppx_deriving.show)))
-
-(ocamllex lexer)
-
-(menhir (modules parser) )
-
-(data_only_dirs old)
