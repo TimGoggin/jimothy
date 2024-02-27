@@ -21,8 +21,12 @@ let number = '-'? digit+
 let bool = "true" | "false"
 let ident = letter (letter | digit | "_")*
 
+(* We don't include newline in whitespace, because we need to catch it
+ * separately in order to update the line number in the lexer, for error
+ * reporting.
+ *)
 let newline = '\n' | '\r' | "\r\n"
-let whitespace = ( ' ' | '\t' | newline )+
+let whitespace = ( ' ' | '\t' )+
 
 rule read_token =
     parse
@@ -64,6 +68,8 @@ rule read_token =
     | number        { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | bool          { BOOL (bool_of_string (Lexing.lexeme lexbuf)) }
     | ident         { ID (Lexing.lexeme lexbuf) }
+
+    | newline       { Lexing.new_line lexbuf ; read_token lexbuf }
 
     | whitespace    { read_token lexbuf }
 

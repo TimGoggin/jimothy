@@ -36,9 +36,19 @@ let arg_parser (s : string) : unit =
 
 let parse_and_show (cmd : parse_cmd_t) (s : string) : unit =
     let parse_and_show' parser shower s =
-        let lexbuf = Lexing.from_string s in
+      let lexbuf = Lexing.from_string s in
+      try
         let exp = parser Lexer.read_token lexbuf in
         print_endline (shower exp)
+      with
+      | Parser.Error ->
+        let pos = Lexing.lexeme_start_p lexbuf in
+        Printf.printf
+          ("Parser error near line %d, character %d.\n")
+          pos.pos_lnum
+          (pos.pos_cnum - pos.pos_bol)
+
+
     in
 
     match cmd with
@@ -55,9 +65,17 @@ let exec (s : string) : unit =
   try
     In_channel.with_open_text s (fun inch ->
       let lexbuf = Lexing.from_channel inch in
-      let p = Parser.terminated_pgm Lexer.read_token lexbuf in
-      let () = Interp.Api.show_prompts := true in
-      Interp.exec p
+      try
+        let p = Parser.terminated_pgm Lexer.read_token lexbuf in
+        let () = Interp.Api.show_prompts := true in
+        Interp.exec p
+      with
+      | Parser.Error ->
+        let pos = Lexing.lexeme_start_p lexbuf in
+        Printf.printf
+          ("Parser error near line %d, character %d.\n")
+          pos.pos_lnum
+          (pos.pos_cnum - pos.pos_bol)
     )
   with
   | Interp.MultipleDeclaration x ->
