@@ -16,7 +16,7 @@
 },
 {
     "file":     "orderofoperations4.imp",
-    "input":    [""],
+    "input":    [],
     "output":   ["6"]
 },
 {
