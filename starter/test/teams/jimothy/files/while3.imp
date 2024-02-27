@@ -1,0 +1,20 @@
+function main(){
+    var a ;
+    var b ;
+
+    a = prompt_int("enter: ") ;
+    b = prompt_int("enter: ");
+
+    while a < 5 do {
+        if b >= 64 then {
+            print_int(a);
+            return;
+        }
+        a++;
+        b = b * 2;
+    }
+
+    print_int(b);
+
+    return;
+}
