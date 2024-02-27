@@ -1,0 +1,12 @@
+function main(){
+    var x = 2;
+    {
+        var x = 2;
+        {
+            var y = 5;
+            print_int(x);
+            return;
+        }
+
+    }
+}

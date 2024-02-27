@@ -3,5 +3,5 @@ function main(){
         skip;
 
     }
-    print_int(1)
+    print_int(1);
 }

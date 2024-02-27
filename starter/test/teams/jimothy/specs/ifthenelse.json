@@ -6,7 +6,7 @@
     },
     {
         "file":     "ifthenelse2.imp",
-        "input":    ["if true then 8 else 14"],
+        "input":    [],
         "output":   ["14"]
     },
     {
