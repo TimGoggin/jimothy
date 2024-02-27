@@ -1,0 +1,9 @@
+function main(){
+    if(1 > 2){
+        print_int(12);
+    }
+    else{
+        print_int(14);
+    }
+    return;
+}
