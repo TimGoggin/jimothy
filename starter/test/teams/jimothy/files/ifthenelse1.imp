@@ -1,0 +1,6 @@
+function main(){
+    if (5 > 4){
+        print_int("8") ;
+    }
+    return;
+}
