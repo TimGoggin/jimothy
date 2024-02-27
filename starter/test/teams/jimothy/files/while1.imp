@@ -1,0 +1,16 @@
+function main(){
+    var a ;
+    var b ;
+
+    a = prompt_int("enter: ") ;
+    b = 0;
+
+    while b < 5 do {
+        a++;
+        b++;
+    }
+
+    print_int(a);
+
+    return;
+}

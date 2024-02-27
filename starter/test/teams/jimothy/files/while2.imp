@@ -1,0 +1,15 @@
+function main(){
+    var a ;
+    var b ;
+
+    a = prompt_int("enter: ") ;
+    b = prompt_int("enter: ");
+
+    while a < b do {
+        a = a * 2;
+    }
+
+    print_int(a);
+
+    return;
+}

@@ -1,0 +1,33 @@
+[
+{
+    "file":     "while1.imp",
+    "input":    ["2"],
+    "output":   ["7"]
+},
+{
+    "file":     "while1.imp",
+    "input":    ["5"],
+    "output":   ["9"]
+},
+{
+    "file":     "while2.imp",
+    "input":    ["2, 9"],
+    "output":   ["16"]
+},
+{
+    "file":     "while2.imp",
+    "input":    ["3, 13"],
+    "output":   ["24"]
+},
+{
+    "file":     "while3.imp",
+    "input":    ["0, 2"],
+    "output":   ["64"]
+},
+{
+    "file":     "while3.imp",
+    "input":    ["2, 32"],
+    "output":   ["3"]
+}
+]
+
