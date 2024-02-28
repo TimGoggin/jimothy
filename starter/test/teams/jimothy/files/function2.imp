@@ -1,0 +1,21 @@
+function doubleatimes(a, x) {
+   var i ;
+   i = 0;
+
+   while i < a do {
+    a++;
+    x = x * 2;
+   }
+
+   return x;
+}
+
+function main(){
+    var a ;
+    var b ;
+    a = prompt_int("enter: ") ;
+    b = prompt_int("enter: ") ;
+
+    print_int(doubleatimes(a, b));
+    return;
+}

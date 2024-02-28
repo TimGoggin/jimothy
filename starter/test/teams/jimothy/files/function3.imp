@@ -1,0 +1,35 @@
+function doubleatimes(a, x) {
+   var i ;
+   i = 0;
+
+   while i < a do {
+    a++;
+    x = x * 2;
+   }
+
+   return x;
+}
+
+function mod(x, mod) {
+    while x > mod do {
+        x = x - mod;
+    }
+
+    return x;
+}
+
+function main(){
+    var a ;
+    var b ;
+    a = prompt_int("enter: ") ;
+    b = prompt_int("enter: ") ;
+
+    var doubled ;
+    doubled = doubleatimes(a, 2) ;
+
+    var modded ;
+    modded = mod(doubled, b);
+
+    print_int(modded);
+    return;
+}

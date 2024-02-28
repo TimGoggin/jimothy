@@ -1,0 +1,11 @@
+function double(x) {
+    return x * 2;
+}
+
+function main(){
+    var a ;
+    a = prompt_int("enter: ") ;
+
+    print_int(double(a));
+    return;
+}
