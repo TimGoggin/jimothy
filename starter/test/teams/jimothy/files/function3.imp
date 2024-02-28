@@ -24,11 +24,8 @@ function main(){
     a = prompt_int("enter: ") ;
     b = prompt_int("enter: ") ;
 
-    var doubled ;
-    doubled = doubleatimes(a, 2) ;
-
     var modded ;
-    modded = mod(doubled, b);
+    modded = mod(doubleatimes(a, 2) ;, b);
 
     print_int(modded);
     return;
