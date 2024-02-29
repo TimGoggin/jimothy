@@ -1,0 +1,15 @@
+[ 
+    {
+        "file":     "expressionsideeffect1.imp",
+        "input":    ["false, true"],
+        "output":   ["true"]
+    },
+    {
+        "file":     "expressionsideeffect1.imp",
+        "input":    ["false, false"],
+        "output":   ["false"]
+    }
+
+    ]
+    
+    
