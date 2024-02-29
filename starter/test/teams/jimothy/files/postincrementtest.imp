@@ -1,0 +1,7 @@
+function main(){
+    var x;
+    x = prompt_int();
+    x++;
+    print_int(x);
+    return
+}
