@@ -1,8 +1,0 @@
-lib: [
-  "_build/install/default/lib/imp/META"
-  "_build/install/default/lib/imp/dune-package"
-  "_build/install/default/lib/imp/opam"
-]
-bin: [
-  "_build/install/default/bin/imp"
-]
