@@ -211,6 +211,10 @@ module Frame = struct
   let add (sigma : Env.t) (sigmas : Env.t list) : Env.t list = 
     sigma :: sigmas 
 
+  let insert (sigmas : Env.t list) (v : Value.t) = 
+    match sigmas with h::t ->
+      | [] -> false
+      | h :: t -> update h v
 
   end
    
