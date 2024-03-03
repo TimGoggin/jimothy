@@ -209,7 +209,10 @@ module Frame = struct
     | E_list of Env.t list
 
   let add (sigma : Env.t) (sigmas : Env.t list) : Env.t list = 
-    sigma ::sigmas end
+    sigma :: sigmas 
+
+
+  end
    
 
 
