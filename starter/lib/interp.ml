@@ -282,13 +282,20 @@ let rec eval (sigma : Env.t) (e : E.t) : (Value.t * Env.t) =
   match e with
   | E.Var x -> Env.lookup sigma x, sigma
   | E.Num n -> Value.V_Int n, sigma
-  | E.Neg e ->
-    let V_Int n, sigma = eval sigma e in
-    V_Int (-n), sigma
+  | E.Bool b -> Value.V_Bool b, sigma
+  | E.Str s -> Value.V_Str s, sigma
   | E.Binop (op, e, e') ->
     let v, sigma = eval sigma e in
     let v', sigma = eval sigma e' in
     binop op v v', sigma
+  | E.Assign (x, e) -> failwith("unimplemented")
+  | E.Not e -> 
+    let V_Bool e', sigma = eval sigma e in
+    V_Bool e', sigma
+  | E.Neg e ->
+    let V_Int n, sigma = eval sigma e in
+    V_Int (-n), sigma
+  | E.Call (x, l) -> failwith("unimplemented")
 (*! eval let !*)
 
 (*  eval e = v, where _ ├ e ↓ v.
