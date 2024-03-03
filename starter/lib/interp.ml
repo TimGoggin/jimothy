@@ -171,6 +171,49 @@ module Api = struct
 
 end
 
+(* Environments.
+ *
+ * A value of type t is a map from identifiers to values.  We use σ to range
+ * over environments and standard function notation when describing them.
+ *)
+module Env = struct
+(* The type of environments.
+  *)
+  type t = Value.t IdentMap.t
+
+  (*  lookup σ x = σ(x).
+    *)
+  let lookup (sigma : t) (x : Ast.Id.t) : Value.t =
+    IdentMap.find x sigma
+
+  (*  update σ x v = σ{x → v}.
+    *)
+  let update (sigma : t) (x : Ast.Id.t) (v : Value.t) : t =
+    IdentMap.add x v sigma
+
+  (*  empty = σ, where dom σ = ∅.
+    *)
+  let empty : t = IdentMap.empty
+
+end
+
+(* Frames.
+ * 
+ * Frames can either be lists of environments, or they can be return frames,
+ * the output of functions. We use two constructors here to represent them both.
+ *)
+module Frame = struct
+
+  type t = 
+    | Ret of Env.t
+    | E_list of Env.t list
+
+  (* let add (sigma : Env.t) (sigmas : t) : Value.t =
+   * sigmas.
+   *)
+
+end
+
 (* exec p :  execute the program p according to the operational semantics
  * provided as a handout.
  *)
