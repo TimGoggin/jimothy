@@ -213,7 +213,7 @@ module Frame = struct
   Both of these functions need to have the type of sigmas changed to E_list but this is proving harder than it should be
  *)
 
-  let add (sigma : Env.t) (sigmas : t) : Env.t list = 
+  let push (sigma : Env.t) (sigmas : t) : Env.t list = 
     match sigmas with
     | E_list sigmas -> sigma :: sigmas
     | Ret v-> failwith(Value.to_string v)
