@@ -216,13 +216,19 @@ module Frame = struct
   let push (sigma : Env.t) (sigmas : t) : Env.t list = 
     match sigmas with
     | E_list sigmas -> sigma :: sigmas
-    | Ret v-> failwith(Value.to_string v)
+    | Ret v -> failwith(Value.to_string v)
 
   let insert (sigmas : t) (id : Ast.Id.t)(v : Value.t) : Env.t list  = 
     match sigmas with 
-      |E_list [] -> failwith("") 
-      |Ret v-> failwith(Value.to_string v)
-      |E_list (h :: tail)  -> (Env.update h id v) :: tail
+      | E_list [] -> failwith("") 
+      | Ret v -> failwith(Value.to_string v)
+      | E_list (h :: tail) -> (Env.update h id v) :: tail
+
+  let pop (sigmas : t) : Env.t list =
+    match sigmas with 
+    | E_list [] -> failwith("")
+    | Ret v -> failwith(Value.to_string v)
+    | E_list (h :: tail) -> tail
     
 end
    
