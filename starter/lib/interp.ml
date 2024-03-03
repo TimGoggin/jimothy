@@ -226,7 +226,78 @@ module Frame = struct
     
 end
    
+(*  binop op v v' = v'', where v'' is the result of applying the semantic
+ *  denotation of `op` to `v` and `v''`.
+ *)
+ let binop (op : E.binop) (v : Value.t) (v' : Value.t) : Value.t =
+  match (op, v, v') with
+  | (E.Plus, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n + n')
+  | (E.Plus, _, _) -> raise (TypeError "UNEXPECTED TYPE: + takes input of int and int")
 
+  | (E.Minus, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n - n')
+  | (E.Minus, _, _) -> raise (TypeError "UNEXPECTED TYPE: - takes input of int and int")
+
+  | (E.Times, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n * n')
+  | (E.Times, _, _) -> raise (TypeError "UNEXPECTED TYPE: * takes input of int and int")
+  
+  | (E.Div, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n / n')
+  | (E.Div, _, _) -> raise (TypeError "UNEXPECTED TYPE: / takes input of int and int")
+
+  | (E.Mod, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n mod n')
+  | (E.Mod, _, _) -> raise (TypeError "UNEXPECTED TYPE: % takes input of int and int")
+
+  | (E.And, Value.V_Bool b, V_Bool b') -> Value.V_Bool (b && b')
+  | (E.And, _, _) -> raise (TypeError "UNEXPECTED TYPE: && takes input of bool and bool")
+
+  | (E.Or, Value.V_Bool b, V_Bool b') -> Value.V_Bool (b || b')
+  | (E.Or, _, _) -> raise (TypeError "UNEXPECTED TYPE: || takes input of bool and bool")
+  
+  | (E.Eq, Value.V_Int n, Value.V_Int n') -> Value.V_Bool (n == n')
+  | (E.Eq, Value.V_Bool b, Value.V_Bool b') -> Value.V_Bool (b == b')
+  | (E.Eq, Value.V_Str s, Value.V_Str s') -> Value.V_Bool (s == s')
+  | (E.Eq, _, _) -> raise (TypeError "UNEXPECTED TYPE: == takes input of bool and bool, int and int, or str and str ")
+
+  | (E.Ne, Value.V_Int n, Value.V_Int n') -> Value.V_Bool (n != n')
+  | (E.Ne, Value.V_Bool b, Value.V_Bool b') -> Value.V_Bool (b != b')
+  | (E.Ne, Value.V_Str s, Value.V_Str s') -> Value.V_Bool (s != s')
+  | (E.Ne, _, _) -> raise (TypeError "UNEXPECTED TYPE: != takes input of bool and bool, int and int, or str and str ")
+
+  | (E.Lt, Value.V_Int n, Value.V_Int n') -> Value.V_Bool (n < n')
+  | (E.Lt, _, _) -> raise (TypeError "UNEXPECTED TYPE: < takes input of int and int ")
+
+  | (E.Le, Value.V_Int n, Value.V_Int n') -> Value.V_Bool (n <= n')
+  | (E.Le, _, _) -> raise (TypeError "UNEXPECTED TYPE: <= takes input of int and int ")
+
+  | (E.Gt, Value.V_Int n, Value.V_Int n') -> Value.V_Bool (n > n')
+  | (E.Gt, _, _) -> raise (TypeError "UNEXPECTED TYPE: > takes input of int and int ")
+
+  | (E.Ge, Value.V_Int n, Value.V_Int n') -> Value.V_Bool (n >= n')
+  | (E.Ge, _, _) -> raise (TypeError "UNEXPECTED TYPE: >= takes input of int and int ")
+
+(*  eval σ e = v, where σ ├ e ↓ v according to our evaluation rules.
+ *)
+(*! eval header !*)
+let rec eval (sigma : Env.t) (e : E.t) : (Value.t * Env.t) =
+(*! end !*)
+  match e with
+  | E.Var x -> Env.lookup sigma x, sigma
+  | E.Num n -> Value.V_Int n, sigma
+  | E.Neg e ->
+    let V_Int n, sigma = eval sigma e in
+    V_Int (-n), sigma
+  | E.Binop (op, e, e') ->
+    let v, sigma = eval sigma e in
+    let v', sigma = eval sigma e' in
+    binop op v v', sigma
+(*! eval let !*)
+
+(*  eval e = v, where _ ├ e ↓ v.
+ *
+ *  Because later declarations shadow earlier ones, this is the `eval`
+ *  function that is visible to clients.
+ *)
+let eval (e : E.t) : (Value.t * Env.t) =
+  eval Env.empty e
 
 (* exec p :  execute the program p according to the operational semantics
  * provided as a handout.
