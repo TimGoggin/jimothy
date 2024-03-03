@@ -205,14 +205,13 @@ end
 module Frame = struct
 
   type t = 
-    | Ret of Env.t
+    | Ret of Value.t
     | E_list of Env.t list
 
-  (* let add (sigma : Env.t) (sigmas : t) : Value.t =
-   * sigmas.
-   *)
+  let add (sigma : Env.t) (sigmas : Env.t list) : Env.t list = 
+    sigma ::sigmas end
+   
 
-end
 
 (* exec p :  execute the program p according to the operational semantics
  * provided as a handout.
