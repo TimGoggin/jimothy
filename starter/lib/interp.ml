@@ -215,15 +215,14 @@ module Frame = struct
   let add (sigma : Env.t) (sigmas : t) : Env.t list = 
     match sigmas with
     | E_list sigmas -> sigma :: sigmas
-    | Ret sigmas -> failwith("fail")
+    | Ret v-> failwith(Value.to_string v)
 
-  let insert (sigmas : t) (v : Value.t) : Env.t list  = 
-    match sigmas with
-    | E_list sigmas -> 
-      match sigmas with h :: t ->
-        |[] -> failwith("fail")
-        |h :: t -> update h v
-    | Ret sigmas -> failwith("fail")
+  let insert (sigmas : t) (id : Id)(v : Value.t) : Env.t list  = 
+    match sigmas with 
+      |E_list [] -> failwith("") 
+      |Ret v-> failwith(Value.to_string v)
+      |E_list (h :: tail)  -> (Env.update h id v) :: tail
+    
 end
    
 
@@ -235,4 +234,3 @@ let exec (_ : Ast.Program.t) : unit =
   failwith "Unimplemented:  exec"
 
 
-t
