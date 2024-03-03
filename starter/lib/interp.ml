@@ -208,15 +208,23 @@ module Frame = struct
     | Ret of Value.t
     | E_list of Env.t list
 
-  let add (sigma : Env.t) (sigmas : Env.t list) : Env.t list = 
-    sigma :: sigmas 
+    (**
+  Both of these functions need to have the type of sigmas changed to E_list but this is proving harder than it should be
+ *)
 
-  let insert (sigmas : Env.t list) (v : Value.t) = 
-    match sigmas with h::t ->
-      | [] -> false
-      | h :: t -> update h v
+  let add (sigma : Env.t) (sigmas : t) : Env.t list = 
+    match sigmas with
+    | E_list sigmas -> sigma :: sigmas
+    | Ret sigmas -> failwith("fail")
 
-  end
+  let insert (sigmas : t) (v : Value.t) : Env.t list  = 
+    match sigmas with
+    | E_list sigmas -> 
+      match sigmas with h :: t ->
+        |[] -> failwith("fail")
+        |h :: t -> update h v
+    | Ret sigmas -> failwith("fail")
+end
    
 
 
@@ -227,3 +235,4 @@ let exec (_ : Ast.Program.t) : unit =
   failwith "Unimplemented:  exec"
 
 
+t
