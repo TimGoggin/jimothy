@@ -204,6 +204,7 @@ end
  *)
 module Frame = struct
 
+
   type t = 
     | Ret of Value.t
     | E_list of Env.t list
@@ -217,7 +218,7 @@ module Frame = struct
     | E_list sigmas -> sigma :: sigmas
     | Ret v-> failwith(Value.to_string v)
 
-  let insert (sigmas : t) (id : Id)(v : Value.t) : Env.t list  = 
+  let insert (sigmas : t) (id : Ast.Id.t)(v : Value.t) : Env.t list  = 
     match sigmas with 
       |E_list [] -> failwith("") 
       |Ret v-> failwith(Value.to_string v)
