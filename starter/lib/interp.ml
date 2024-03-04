@@ -318,11 +318,18 @@ let rec eval (sigmas : Frame.t) (e : E.t) : (Value.t * Frame.t) =
     let v, sigmas = eval sigmas e in 
     v, Frame.E_list (Frame.update sigmas id v)
   | E.Not e -> 
-    let V_Bool e', sigmas = eval sigmas e in
-    V_Bool e', sigmas
+    let v, frame = eval sigmas e in
+    begin match v with 
+      | Value.V_Bool true -> Value.V_Bool false, frame
+      | Value.V_Bool false -> Value.V_Bool true, frame
+      | _ -> raise (TypeError "UNEXPECTED TYPE: ! takes in an expression of type bool")
+    end
   | E.Neg e ->
-    let V_Int n, sigmas = eval sigmas e in
-    V_Int (-n), sigmas
+    let n, frame = eval sigmas e in
+    begin match n with 
+      | Value.V_Int x -> Value.V_Int (-x), frame
+      | _ -> raise (TypeError "UNEXPECTED TYPE: ~ takes in an expression of type int")
+    end
   | E.Call (x, l) -> failwith("unimplemented")
 (*! eval let !*)
 
