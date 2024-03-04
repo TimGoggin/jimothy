@@ -349,7 +349,13 @@ let rec statement (sigmas : Frame.t) (s : S.t) : Frame.t =
   | S.Block [] -> failwith("ERROR: Empty block -- did you mean to use a skip statement?")
   | S.Block (h :: []) -> statement sigmas h
   | S.Block (h :: tail) -> statement (statement sigmas h) (S.Block tail)
-  | S.If (e, s, s') -> failwith("Unimplemented")
+  | S.If (e, s, s') -> 
+    let v, frame = eval sigmas e in
+      begin match v with
+        | Value.V_Bool true -> statement frame s
+        | Value.V_Bool false -> statement frame s'
+        | _ -> failwith("ERROR: If expects an input of type bool")
+      end
   | S.While (e, s) -> failwith("Unimplemented")
   | S.Return e -> failwith("Unimplemented")
 
