@@ -232,7 +232,7 @@ module Frame = struct
   let rec lookup (sigmas : t) (id : Ast.Id.t) : Value.t =
     match sigmas with
     | Ret _ -> failwith("")
-    | E_list [] -> raise(UnboundVariable "ERROR: Variable not found")
+    | E_list [] -> raise(UnboundVariable ("ERROR: " ^ id ^ " not found"))
     | E_list (h :: tail) -> 
         try Env.lookup h id
         with Not_found -> lookup (E_list tail) id
