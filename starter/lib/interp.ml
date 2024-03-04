@@ -330,12 +330,12 @@ let rec statement (sigmas : Frame.t) (s : S.t) : Frame.t =
   match s with 
   | S.Skip -> sigmas
   | S.VarDec [] -> failwith("ERROR: this should never happen")
-  | S.VarDec (h :: _tail) -> 
+  | S.VarDec (h :: tail) -> 
     begin match h with
       | id, Some e -> 
         let v, _f = eval sigmas e in
-        Frame.E_list (Frame.update sigmas id v)
-      | id, None -> Frame.E_list (Frame.update sigmas id Value.V_Undefined)
+        statement (Frame.E_list (Frame.update sigmas id v)) (S.VarDec tail)
+      | id, None -> statement (Frame.E_list (Frame.update sigmas id Value.V_Undefined)) (S.VarDec tail)
     end
   | S.Expr e -> 
     let _v, sigmas = eval sigmas e in sigmas
