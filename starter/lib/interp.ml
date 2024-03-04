@@ -340,7 +340,7 @@ let rec statement (sigmas : Frame.t) (s : S.t) : Frame.t =
   | S.Expr e -> 
     let _v, sigmas = eval sigmas e in sigmas
   | S.Block [] -> failwith("ERROR: Empty block -- did you mean to use a skip statement?")
-  | S.Block (h :: tail) -> statement sigmas h
+  | S.Block (h :: tail) -> statement (statement sigmas h) (S.Block tail)
   | S.If (e, s, s') -> failwith("Unimplemented")
   | S.While (e, s) -> failwith("Unimplemented")
   | S.Return e -> failwith("Unimplemented")
