@@ -333,14 +333,14 @@ let rec statement (sigmas : Frame.t) (s : S.t) : Frame.t =
   | S.VarDec (h :: tail) -> 
     begin match h with
       | id, Some e -> 
-        let v, _f = eval sigmas e in
-        statement (Frame.E_list (Frame.update sigmas id v)) (S.VarDec tail)
+        let v, f = eval sigmas e in
+        statement (Frame.E_list (Frame.update f id v)) (S.VarDec tail)
       | id, None -> statement (Frame.E_list (Frame.update sigmas id Value.V_Undefined)) (S.VarDec tail)
     end
   | S.Expr e -> 
     let _v, sigmas = eval sigmas e in sigmas
   | S.Block [] -> failwith("ERROR: Empty block -- did you mean to use a skip statement?")
-  | S.Block (h :: _tail) -> statement sigmas h
+  | S.Block (h :: tail) -> statement sigmas h
   | S.If (e, s, s') -> failwith("Unimplemented")
   | S.While (e, s) -> failwith("Unimplemented")
   | S.Return e -> failwith("Unimplemented")
