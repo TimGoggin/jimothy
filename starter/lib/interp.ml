@@ -212,16 +212,16 @@ module Frame = struct
   Both of these functions need to have the type of sigmas changed to E_list but this is proving harder than it should be
  *)
 
-  let push (sigma : Env.t) (sigmas : t) : Env.t list = 
+  let push (sigma : Env.t) (sigmas : t) : t = 
     match sigmas with
-    | E_list sigmas -> sigma :: sigmas
+    | E_list sigmas -> E_list (sigma :: sigmas)
     | Ret v -> failwith(Value.to_string v)
 
-  let insert (sigmas : t) (id : Ast.Id.t)(v : Value.t) : Env.t list  = 
+  let insert (sigmas : t) (id : Ast.Id.t)(v : Value.t) : t  = 
     match sigmas with 
       | E_list [] -> failwith("") 
       | Ret v -> failwith(Value.to_string v)
-      | E_list (h :: tail) -> (Env.update h id v) :: tail
+      | E_list (h :: tail) -> E_list ((Env.update h id v) :: tail)
 
   let pop (sigmas : t) : Env.t list =
     match sigmas with 
@@ -237,13 +237,13 @@ module Frame = struct
         try Env.lookup h id
         with Not_found -> lookup (E_list tail) id
 
-  let update (sigmas : t) (id : Ast.Id.t) (v : Value.t) : Env.t list =
+  let update (sigmas : t) (id : Ast.Id.t) (v : Value.t) : t =
     match sigmas with
     | Ret _ -> failwith("")
     | E_list [] -> failwith("")
     | E_list (h :: tail) -> 
       begin match Env.lookup h id with
-        | exception UnboundVariable _ -> (Env.update h id v) :: tail
+        | exception UnboundVariable _ -> E_list ((Env.update h id v) :: tail)
         | _ -> raise (MultipleDeclaration ("MULTIPLE DECLARATION: " ^ id ^ " does not exist"))
       end
 
@@ -316,7 +316,7 @@ let rec eval (sigmas : Frame.t) (e : E.t) : (Value.t * Frame.t) =
     binop op v v', sigmas
   | E.Assign (id, e) -> 
     let v, sigmas = eval sigmas e in 
-    v, Frame.E_list (Frame.update sigmas id v)
+    v, Frame.update sigmas id v
   | E.Not e -> 
     let v, frame = eval sigmas e in
     begin match v with 
@@ -341,15 +341,15 @@ let rec statement (sigmas : Frame.t) (s : S.t) : Frame.t =
     begin match h with
       | id, Some e -> 
         let v, f = eval sigmas e in
-        Frame.E_list (Frame.update f id v)
-      | id, None -> Frame.E_list (Frame.update sigmas id Value.V_Undefined)
+        Frame.update f id v
+      | id, None -> Frame.update sigmas id Value.V_Undefined
     end
   | S.VarDec (h :: tail) -> 
     begin match h with
       | id, Some e -> 
         let v, f = eval sigmas e in
-        statement (Frame.E_list (Frame.update f id v)) (S.VarDec tail)
-      | id, None -> statement (Frame.E_list (Frame.update sigmas id Value.V_Undefined)) (S.VarDec tail)
+        statement (Frame.update f id v) (S.VarDec tail)
+      | id, None -> statement (Frame.update sigmas id Value.V_Undefined) (S.VarDec tail)
     end
   | S.Expr e -> 
     let _v, sigmas = eval sigmas e in sigmas
