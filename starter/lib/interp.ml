@@ -329,7 +329,14 @@ let rec eval (sigmas : Frame.t) (e : E.t) : (Value.t * Frame.t) =
 let rec statement (sigmas : Frame.t) (s : S.t) : Frame.t =
   match s with 
   | S.Skip -> sigmas
-  | S.VarDec l -> failwith("Unimplemented")
+  | S.VarDec [] -> failwith("ERROR: this should never happen")
+  | S.VarDec (h :: tail) -> 
+    begin match h with
+      | id, e -> 
+        let v = eval sigmas e in
+        Frame.E_list (Frame.update sigmas id v)
+      | id, _ -> Frame.E_list (Frame.update sigmas id Value.V_Undefined)
+    end
   | S.Expr e -> 
     let v, sigmas = eval sigmas e in sigmas
   | S.Block [] -> failwith("ERROR: Empty block: did you mean to use a skip statement?")
