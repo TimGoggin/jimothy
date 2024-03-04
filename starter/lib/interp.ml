@@ -353,6 +353,9 @@ let rec statement (sigmas : Frame.t) (s : S.t) : Frame.t =
 let eval (e : E.t) : (Value.t * Frame.t) =
   eval Frame.emptyE e
 
+let statement (s : S.t) : Frame.t =
+  statement Frame.emptyE s
+
 (* exec p :  execute the program p according to the operational semantics
  * provided as a handout.
  *)
