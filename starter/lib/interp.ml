@@ -330,6 +330,13 @@ let rec statement (sigmas : Frame.t) (s : S.t) : Frame.t =
   match s with 
   | S.Skip -> sigmas
   | S.VarDec [] -> failwith("ERROR: this should never happen")
+  | S.VarDec (h :: []) -> 
+    begin match h with
+    | id, Some e -> 
+      let v, f = eval sigmas e in
+      Frame.E_list (Frame.update f id v)
+    | id, None -> Frame.E_list (Frame.update sigmas id Value.V_Undefined)
+end
   | S.VarDec (h :: tail) -> 
     begin match h with
       | id, Some e -> 
@@ -340,6 +347,7 @@ let rec statement (sigmas : Frame.t) (s : S.t) : Frame.t =
   | S.Expr e -> 
     let _v, sigmas = eval sigmas e in sigmas
   | S.Block [] -> failwith("ERROR: Empty block -- did you mean to use a skip statement?")
+  | S.Block (h :: []) -> statement sigmas h
   | S.Block (h :: tail) -> statement (statement sigmas h) (S.Block tail)
   | S.If (e, s, s') -> failwith("Unimplemented")
   | S.While (e, s) -> failwith("Unimplemented")
