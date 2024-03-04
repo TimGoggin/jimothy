@@ -229,6 +229,27 @@ module Frame = struct
     | E_list [] -> failwith("")
     | Ret v -> failwith(Value.to_string v)
     | E_list (h :: tail) -> tail
+
+  let rec lookup (sigmas : t) (id : Ast.Id.t) : Value.t =
+    match sigmas with
+    | Ret _ -> failwith("")
+    | E_list [] -> raise(UnboundVariable "ERROR: Variable not found")
+    | E_list (h :: tail) -> 
+        try Env.lookup h id
+        with Not_found -> lookup (E_list tail) id
+
+  let update (sigmas : t) (id : Ast.Id.t) (v : Value.t) : Env.t list =
+    match sigmas with
+    | Ret _ -> failwith("")
+    | E_list [] -> failwith("")
+    | E_list (h :: tail) -> 
+      begin match Env.lookup h id with
+        | exception UnboundVariable _ -> (Env.update h id v) :: tail
+        | _ -> raise (MultipleDeclaration ("MULTIPLE DECLARATION: " ^ id ^ " does not exist"))
+      end
+
+  let emptyE : t = E_list []
+  let emptyF : t = Ret Value.V_Undefined
     
 end
    
@@ -283,24 +304,26 @@ end
 (*  eval σ e = v, where σ ├ e ↓ v according to our evaluation rules.
  *)
 (*! eval header !*)
-let rec eval (sigma : Env.t) (e : E.t) : (Value.t * Env.t) =
+let rec eval (sigmas : Frame.t) (e : E.t) : (Value.t * Frame.t) =
 (*! end !*)
   match e with
-  | E.Var x -> Env.lookup sigma x, sigma
-  | E.Num n -> Value.V_Int n, sigma
-  | E.Bool b -> Value.V_Bool b, sigma
-  | E.Str s -> Value.V_Str s, sigma
+  | E.Var x -> Frame.lookup sigmas x, sigmas
+  | E.Num n -> Value.V_Int n, sigmas
+  | E.Bool b -> Value.V_Bool b, sigmas
+  | E.Str s -> Value.V_Str s, sigmas
   | E.Binop (op, e, e') ->
-    let v, sigma = eval sigma e in
-    let v', sigma = eval sigma e' in
-    binop op v v', sigma
-  | E.Assign (x, e) -> failwith("unimplemented")
+    let v, sigmas = eval sigmas e in
+    let v', sigmas = eval sigmas e' in
+    binop op v v', sigmas
+  | E.Assign (id, e) -> 
+    let v, sigmas = eval sigmas e in 
+    v, Frame.E_list (Frame.update sigmas id v)
   | E.Not e -> 
-    let V_Bool e', sigma = eval sigma e in
-    V_Bool e', sigma
+    let V_Bool e', sigmas = eval sigmas e in
+    V_Bool e', sigmas
   | E.Neg e ->
-    let V_Int n, sigma = eval sigma e in
-    V_Int (-n), sigma
+    let V_Int n, sigmas = eval sigmas e in
+    V_Int (-n), sigmas
   | E.Call (x, l) -> failwith("unimplemented")
 (*! eval let !*)
 
@@ -309,8 +332,8 @@ let rec eval (sigma : Env.t) (e : E.t) : (Value.t * Env.t) =
  *  Because later declarations shadow earlier ones, this is the `eval`
  *  function that is visible to clients.
  *)
-let eval (e : E.t) : (Value.t * Env.t) =
-  eval Env.empty e
+let eval (e : E.t) : (Value.t * Frame.t) =
+  eval Frame.emptyE e
 
 (* exec p :  execute the program p according to the operational semantics
  * provided as a handout.
