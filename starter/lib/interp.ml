@@ -338,7 +338,7 @@ let rec statement (sigmas : Frame.t) (s : S.t) : Frame.t =
       | id, None -> Frame.E_list (Frame.update sigmas id Value.V_Undefined)
     end
   | S.Expr e -> 
-    let v, sigmas = eval sigmas e in sigmas
+    let _v, sigmas = eval sigmas e in sigmas
   | S.Block [] -> failwith("ERROR: Empty block: did you mean to use a skip statement?")
   | S.Block (h :: _tail) -> statement sigmas h
   | S.If (e, s, s') -> failwith("Unimplemented")
