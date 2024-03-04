@@ -204,7 +204,6 @@ end
  *)
 module Frame = struct
 
-
   type t = 
     | Ret of Value.t
     | E_list of Env.t list
@@ -326,6 +325,18 @@ let rec eval (sigmas : Frame.t) (e : E.t) : (Value.t * Frame.t) =
     V_Int (-n), sigmas
   | E.Call (x, l) -> failwith("unimplemented")
 (*! eval let !*)
+
+let rec statement (sigmas : Frame.t) (s : S.t) : Frame.t =
+  match s with 
+  | S.Skip -> sigmas
+  | S.VarDec l -> failwith("Unimplemented")
+  | S.Expr e -> 
+    let v, sigmas = eval sigmas e in sigmas
+  | S.Block [] -> failwith("how dare you")
+  | S.Block (h :: tail) -> statement sigmas h
+  | S.If (e, s, s') -> failwith("Unimplemented")
+  | S.While (e, s) -> failwith("Unimplemented")
+  | S.Return e -> failwith("Unimplemented")
 
 (*  eval e = v, where _ ├ e ↓ v.
  *
