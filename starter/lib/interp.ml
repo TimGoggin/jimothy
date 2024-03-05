@@ -258,13 +258,13 @@ let rec funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
     | Pgm [] -> raise(UndefinedFunction "Function not defined")
     | Pgm (FunDef (name,l,sl) :: tail) -> if name = id then FunDef (name,l,sl) else funLookup(Pgm tail) (id)
 
-let rec functionEnvironmentMaker (func : P.fundef)(sigma : Env.t) (paramValues : Value.t list) : Env.t =
+let rec functionEnvironmentMaker (func : P.fundef)(sigma : Env.t) (paramValues : E.t list) : Env.t =
   match func with 
   |(FunDef (_,[],_)) -> sigma
   |(FunDef (_,h::tail,_)) -> begin
     match paramValues with 
     |[] -> failwith("aaa")
-    |head ::tail -> functionEnvironmentMaker func (Env.update sigma h head) tail
+    |head ::tail -> functionEnvironmentMaker func (Env.update sigma h (eval head)) tail
   end
 
 (*  binop op v v' = v'', where v'' is the result of applying the semantic
@@ -347,7 +347,10 @@ let rec eval (sigmas : Frame.t) (e : E.t) (pgrm : P.t) : (Value.t * Frame.t) =
     end
   | E.Call (x, pl) -> 
     let FunDef (_, p, sl) = funLookup pgrm x in
-      statement (Frame.push s sigmas) (S.Block sl) pgrm
+      let sFun = functionEnvironmentMaker (funLookup pgrm x) Env.empty pl in statement sFun (S.Block sl) pgrm end 
+
+  end
+      (*statement (Frame.push s sigmas) (S.Block sl) pgrm*)
 (*! eval let !*)
 
 let rec statement (sigmas : Frame.t) (s : S.t) (pgrm : P.t) : Frame.t =
