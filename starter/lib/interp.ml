@@ -253,15 +253,11 @@ module Frame = struct
     
 end
 
-
-
 let rec funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
   match pgrm with 
     | Pgm [] -> raise(UndefinedFunction "Function not defined")
     | Pgm (FunDef (name,l,sl) :: tail) -> if name = id then FunDef (name,l,sl) else funLookup(Pgm tail) (id)
 
-
-   
 (*  binop op v v' = v'', where v'' is the result of applying the semantic
  *  denotation of `op` to `v` and `v''`.
  *)
@@ -313,7 +309,7 @@ let rec funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
 (*  eval σ e = v, where σ ├ e ↓ v according to our evaluation rules.
  *)
 (*! eval header !*)
-let rec eval (sigmas : Frame.t) (e : E.t) (fn : P.fundef) : (Value.t * Frame.t) =
+let rec eval (sigmas : Frame.t) (e : E.t) (pgrm : P.t) : (Value.t * Frame.t) =
 (*! end !*)
   match e with
   | E.Var x -> Frame.lookup sigmas x, sigmas
@@ -321,56 +317,58 @@ let rec eval (sigmas : Frame.t) (e : E.t) (fn : P.fundef) : (Value.t * Frame.t) 
   | E.Bool b -> Value.V_Bool b, sigmas
   | E.Str s -> Value.V_Str s, sigmas
   | E.Binop (op, e, e') ->
-    let v, sigmas = eval sigmas e fn in
-    let v', sigmas = eval sigmas e' fn in
+    let v, sigmas = eval sigmas e pgrm in
+    let v', sigmas = eval sigmas e' pgrm in
     binop op v v', sigmas
   | E.Assign (id, e) -> 
-    let v, sigmas = eval sigmas e fn in 
+    let v, sigmas = eval sigmas e pgrm in 
     v, Frame.update sigmas id v
   | E.Not e -> 
-    let v, frame = eval sigmas e fn in
+    let v, frame = eval sigmas e pgrm in
     begin match v with 
       | Value.V_Bool true -> Value.V_Bool false, frame
       | Value.V_Bool false -> Value.V_Bool true, frame
       | _ -> raise (TypeError "UNEXPECTED TYPE: ! takes in an expression of type bool")
     end
   | E.Neg e ->
-    let n, frame = eval sigmas e fn in
+    let n, frame = eval sigmas e pgrm in
     begin match n with 
       | Value.V_Int x -> Value.V_Int (-x), frame
       | _ -> raise (TypeError "UNEXPECTED TYPE: ~ takes in an expression of type int")
     end
-  | E.Call (x, l) -> failwith("unimplemented")
+  | E.Call (x, pl) -> 
+    let FunDef (_, p, sl) = funLookup pgrm x in
+      statement (Frame.push s sigmas) (S.Block sl) pgrm
 (*! eval let !*)
 
-let rec statement (sigmas : Frame.t) (s : S.t) (fn : P.fundef) : Frame.t =
+let rec statement (sigmas : Frame.t) (s : S.t) (pgrm : P.t) : Frame.t =
   match s with 
   | S.Skip -> sigmas
   | S.VarDec [] -> failwith("ERROR: this should never happen")
   | S.VarDec (h :: []) -> 
     begin match h with
       | id, Some e -> 
-        let v, f = eval sigmas e fn in
+        let v, f = eval sigmas e pgrm in
         Frame.update f id v
       | id, None -> Frame.update sigmas id Value.V_Undefined
     end
   | S.VarDec (h :: tail) -> 
     begin match h with
       | id, Some e -> 
-        let v, f = eval sigmas e fn in
-        statement (Frame.update f id v) (S.VarDec tail) fn
-      | id, None -> statement (Frame.update sigmas id Value.V_Undefined) (S.VarDec tail) fn
+        let v, f = eval sigmas e pgrm in
+        statement (Frame.update f id v) (S.VarDec tail) pgrm
+      | id, None -> statement (Frame.update sigmas id Value.V_Undefined) (S.VarDec tail) pgrm
     end
   | S.Expr e -> 
-    let _v, sigmas = eval sigmas e fn in sigmas
+    let _v, sigmas = eval sigmas e pgrm in sigmas
   | S.Block [] -> failwith("ERROR: Empty block -- did you mean to use a skip statement?")
-  | S.Block (h :: []) -> statement sigmas h fn
-  | S.Block (h :: tail) -> statement (statement sigmas h fn) (S.Block tail) fn
+  | S.Block (h :: []) -> statement sigmas h pgrm
+  | S.Block (h :: tail) -> statement (statement sigmas h pgrm) (S.Block tail) pgrm
   | S.If (e, s, s') -> 
-    let v, frame = eval sigmas e fn in
+    let v, frame = eval sigmas e pgrm in
       begin match v with
-        | Value.V_Bool true -> statement frame s fn
-        | Value.V_Bool false -> statement frame s' fn
+        | Value.V_Bool true -> statement frame s pgrm
+        | Value.V_Bool false -> statement frame s' pgrm
         | _ -> failwith("ERROR: If expects an input of type bool")
       end
   | S.While (e, s) -> failwith("Unimplemented")
@@ -381,11 +379,11 @@ let rec statement (sigmas : Frame.t) (s : S.t) (fn : P.fundef) : Frame.t =
  *  Because later declarations shadow earlier ones, this is the `eval`
  *  function that is visible to clients.
  *)
-let eval (e : E.t) (fn : P.fundef) : (Value.t * Frame.t) =
-  eval Frame.emptyE e fn
+let eval (e : E.t) (pgrm : P.t) : (Value.t * Frame.t) =
+  eval Frame.emptyE e pgrm
 
-let statement (s : S.t) (fn : P.fundef) : Frame.t =
-  statement Frame.emptyE s fn
+let statement (s : S.t) (pgrm : P.t) : Frame.t =
+  statement Frame.emptyE s pgrm
 
 (* exec p :  execute the program p according to the operational semantics
  * provided as a handout.
