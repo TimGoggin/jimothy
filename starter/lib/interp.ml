@@ -255,10 +255,10 @@ end
 
 
 
-let rec funLookup (pgrm : P.Program.t) (id : Value.Id.t) : P.fundef  =
+let rec funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
   match pgrm with 
-    |[] -> raise(UndefinedFunction "Function not defined")
-    |(name,l,sl) :: tail -> if name = id then (name,l,sl) else funLookup(tail) (id)
+    | Pgm [] -> raise(UndefinedFunction "Function not defined")
+    | Pgm (FunDef (name,l,sl) :: tail) -> if name = id then FunDef (name,l,sl) else funLookup(Pgm tail) (id)
 
 
    
