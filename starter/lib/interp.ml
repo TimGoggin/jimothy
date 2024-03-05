@@ -258,6 +258,15 @@ let rec funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
     | Pgm [] -> raise(UndefinedFunction "Function not defined")
     | Pgm (FunDef (name,l,sl) :: tail) -> if name = id then FunDef (name,l,sl) else funLookup(Pgm tail) (id)
 
+let rec functionEnvironmentMaker (func : P.fundef)(sigma : Env.t) (paramValues : Value.t list) : Env.t =
+  match func with 
+  |(FunDef (_,[],_)) -> sigma
+  |(FunDef (_,h::tail,_)) -> begin
+    match paramValues with 
+    |[] -> failwith("aaa")
+    |head ::tail -> functionEnvironmentMaker func (Env.update sigma h head) tail
+  end
+
 (*  binop op v v' = v'', where v'' is the result of applying the semantic
  *  denotation of `op` to `v` and `v''`.
  *)
