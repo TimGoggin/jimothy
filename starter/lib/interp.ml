@@ -252,6 +252,15 @@ module Frame = struct
   let emptyF : t = Ret Value.V_Undefined
     
 end
+
+
+
+let rec funLookup (pgrm : P.Program.t) (id : Value.Id.t) : P.fundef  =
+  match pgrm with 
+    |[] -> raise(UndefinedFunction "Function not defined")
+    |(name,l,sl) :: tail -> if name = id then (name,l,sl) else funLookup(tail) (id)
+
+
    
 (*  binop op v v' = v'', where v'' is the result of applying the semantic
  *  denotation of `op` to `v` and `v''`.
