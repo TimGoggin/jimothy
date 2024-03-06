@@ -250,7 +250,7 @@ module Frame = struct
 
   let get_value (sigmas : t) : Value.t =
     match sigmas with
-      | Ret sigmas -> sigmas
+      | Ret v -> v
       | E_list _sigmas -> failwith("no")
 
   let emptyE : t = E_list []
