@@ -347,10 +347,11 @@ let rec eval (sigmas : Frame.t) (e : E.t) (pgrm : P.t) : (Value.t * Frame.t) =
     end
   | E.Call (x, pl) -> 
     let FunDef (id, p, sl) = funLookup pgrm x in
-      let sFun = functionEnvironmentMaker (FunDef (id, p, sl)) Env.empty pl in statement sFun (S.Block sl) pgrm  
+      let newEnv = functionEnvironmentMaker (FunDef (id, p, sl)) Env.empty pl in 
+        statement (Frame.push newEnv sigmas) (S.Block sl) pgrm  
 (*! eval let !*)
 
-let rec statement (sigmas : Frame.t) (s : S.t) (pgrm : P.t) : Frame.t =
+and statement (sigmas : Frame.t) (s : S.t) (pgrm : P.t) : Frame.t =
   match s with 
   | S.Skip -> sigmas
   | S.VarDec [] -> failwith("ERROR: this should never happen")
