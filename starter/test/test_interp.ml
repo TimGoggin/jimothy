@@ -99,7 +99,7 @@
    let actual : string list =
      In_channel.with_open_text tmpfile In_channel.input_lines in
  
-   assert_equal ~printer:(String.concat " ") expected actual
+   assert_equal ~ctxt:tc ~printer:(String.concat " ") expected actual
  
  (* make_suite_from_specs sd fd f = ts, where ts is a test suite with name
   * `f`, where the tests in ts are specified by the specs in `sd`/`f` and
@@ -116,35 +116,48 @@
        (fun i s -> Int.to_string i >:: make_test_from_json_spec files_dir s) 
        specs
  
+ (*  is_dir f = true,  f is the name of a directory
+  *             false, o/w.
+  *)
+ let is_dir (f : string) : bool =
+   match Unix.stat f with
+   | {st_kind = S_DIR; _} -> true
+   | _ -> false
+ 
  let () =
-   let show_and_run s =
-     match s with
-     | OUnitTest.TestLabel (name, _) ->
-       print_endline @@ "=====" ^ name  ^ "=====" ;
-       run_test_tt_main s ;
-       print_endline ""
-     | _ ->
-       run_test_tt_main s
-   in
  
-   let team_tests d =
-     print_endline "========================================" ;
-     print_endline d ;
-     print_endline "========================================" ;
-     print_endline "" ;
+   (* team_tests d = a test suite named `d` that consists of all tests under
+    * the team directory `d`.  Only read tests from files with extension
+    * .json.
+    *)
+   let team_tests d : test =
      let team_specs_dir = 
-       Filename.concat (Filename.concat interp_tests_dir d) specs_dir in
+       Filename.concat d specs_dir in
      let team_files_dir =
-       Filename.concat (Filename.concat interp_tests_dir d) files_dir in
+       Filename.concat d files_dir in
      let spec_files = 
-       Sys.readdir team_specs_dir |> Array.to_list in
-     let suites = List.map (make_suite_from_specs team_specs_dir team_files_dir) spec_files in
-     List.iter show_and_run suites
+       List.filter (fun f -> Filename.check_suffix f "json")
+         (Sys.readdir team_specs_dir |> Array.to_list) in
+     let suites : test list = 
+       List.map 
+         (make_suite_from_specs team_specs_dir team_files_dir) spec_files in
+     d >::: suites
    in
  
+   (* team_dirs = all directories under the `interp_tests_dir` directory.
+    *)
    let team_dirs : string list =
-     Sys.readdir interp_tests_dir |> Array.to_list in
+     Sys.readdir interp_tests_dir 
+     |> Array.to_list 
+     |> List.map (Filename.concat interp_tests_dir)
+     |> List.filter is_dir in
  
-   List.iter team_tests team_dirs
+   (*  all_suites = all test suites under all team directories combined into
+    *  a single test suite named "all tests"
+    *)
+   let all_suites : test = "all tests" >::: List.map team_tests team_dirs in
+ 
+   run_test_tt_main all_suites
+ 
  
  
