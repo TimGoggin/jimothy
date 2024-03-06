@@ -347,10 +347,7 @@ let rec eval (sigmas : Frame.t) (e : E.t) (pgrm : P.t) : (Value.t * Frame.t) =
     end
   | E.Call (x, pl) -> 
     let FunDef (_, p, sl) = funLookup pgrm x in
-      let sFun = functionEnvironmentMaker (funLookup pgrm x) Env.empty pl in statement sFun (S.Block sl) pgrm end 
-
-  end
-      (*statement (Frame.push s sigmas) (S.Block sl) pgrm*)
+      let sFun = functionEnvironmentMaker (funLookup pgrm x) Env.empty pl in statement sFun (S.Block sl) pgrm  
 (*! eval let !*)
 
 let rec statement (sigmas : Frame.t) (s : S.t) (pgrm : P.t) : Frame.t =
