@@ -244,7 +244,7 @@
      | E_list [] -> failwith("")
      | E_list (h :: tail) -> 
        begin match Env.lookup h id with
-         | exception UnboundVariable _ -> E_list ((Env.update h id v) :: tail)
+         | exception Not_found -> E_list ((Env.update h id v) :: tail)
          | _ -> raise (MultipleDeclaration ("MULTIPLE DECLARATION: " ^ id ^ " does not exist"))
        end
  
