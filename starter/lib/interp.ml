@@ -248,10 +248,10 @@ module Frame = struct
         | _ -> raise (MultipleDeclaration ("MULTIPLE DECLARATION: " ^ id ^ " does not exist"))
       end
 
-  let get_value(sigmas) : Value.t =
+  let get_value (sigmas : t) : Value.t =
     match sigmas with
-      |Ret sigmas -> sigmas
-      |E_list _sigmas -> failwith("no")
+      | Ret sigmas -> sigmas
+      | E_list _sigmas -> failwith("no")
 
   let emptyE : t = E_list []
   let emptyF : t = Ret Value.V_Undefined
