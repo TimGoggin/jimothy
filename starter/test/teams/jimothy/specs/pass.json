@@ -1,9 +1,6 @@
-[
     {
         "file":     "skiptest.imp",
         "input":    [],
         "output":   ["1"]
     }
 
-    
-]

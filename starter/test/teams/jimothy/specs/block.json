@@ -1,18 +1,17 @@
-[
+
 {
     "file":     "block1.imp",
     "input":    [],
     "output":   ["1"]
-},
+}
 {
     "file":     "block2.imp",
     "input":    [],
     "output":   ["2"]
-},
+}
 {
     "file":     "block3.imp",
     "input":    [],
     "output":   ["3"]
 }
 
-]

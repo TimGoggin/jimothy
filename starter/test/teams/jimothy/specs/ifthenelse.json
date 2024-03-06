@@ -1,20 +1,18 @@
-[ 
     {
         "file":     "ifthenelse1.imp",
         "input":    [],
         "output":   ["8"]
-    },
+    }
     {
         "file":     "ifthenelse2.imp",
         "input":    [],
         "output":   ["14"]
-    },
+    }
     {
         "file":     "ifthenelse3.imp",
         "input":    [],
         "output":   ["3"]
     }
 
-    ]
     
     

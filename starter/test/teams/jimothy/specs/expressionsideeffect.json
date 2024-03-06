@@ -1,30 +1,29 @@
-[ 
+
     {
         "file":     "expressionsideeffect1.imp",
         "input":    ["false, true"],
         "output":   ["true"]
-    },
+    }
     {
         "file":     "expressionsideeffect1.imp",
         "input":    ["false, false"],
         "output":   ["false"]
-    },
+    }
     {
         "file":     "expressionsideeffect2.imp",
         "input":    ["2, false, 4"],
         "output":   ["true"]
-    },
+    }
     {
         "file":     "expressionsideeffect2.imp",
         "input":    ["7, false, 5"],
         "output":   ["false"]
-    },
+    }
     {
         "file":     "expressionsideeffect2.imp",
         "input":    ["7, true, 5"],
         "output":   ["false"]
     }
 
-    ]
     
     
