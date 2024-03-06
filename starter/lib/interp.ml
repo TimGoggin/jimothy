@@ -346,8 +346,8 @@ let rec eval (sigmas : Frame.t) (e : E.t) (pgrm : P.t) : (Value.t * Frame.t) =
       | _ -> raise (TypeError "UNEXPECTED TYPE: ~ takes in an expression of type int")
     end
   | E.Call (x, pl) -> 
-    let FunDef (_, p, sl) = funLookup pgrm x in
-      let sFun = functionEnvironmentMaker (funLookup pgrm x) Env.empty pl in statement sFun (S.Block sl) pgrm  
+    let FunDef (id, p, sl) = funLookup pgrm x in
+      let sFun = functionEnvironmentMaker (FunDef (id, p, sl)) Env.empty pl in statement sFun (S.Block sl) pgrm  
 (*! eval let !*)
 
 let rec statement (sigmas : Frame.t) (s : S.t) (pgrm : P.t) : Frame.t =
