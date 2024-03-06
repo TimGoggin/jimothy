@@ -253,7 +253,7 @@
        | Ret v -> v
        | E_list _sigmas -> failwith("no")
  
-   let emptyE : t = E_list []
+   let emptyE : t = E_list [ Env.empty ]
    let emptyF : t = Ret Value.V_Undefined
      
  end
