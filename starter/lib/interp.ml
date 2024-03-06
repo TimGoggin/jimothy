@@ -258,20 +258,6 @@ module Frame = struct
     
 end
 
-let rec funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
-  match pgrm with 
-    | Pgm [] -> raise(UndefinedFunction "Function not defined")
-    | Pgm (FunDef (name,l,sl) :: tail) -> if name = id then FunDef (name,l,sl) else funLookup(Pgm tail) (id)
-
-let rec functionEnvironmentMaker (func : P.fundef) (sigma : Env.t) (paramValues : E.t list) : Env.t =
-  match func with 
-  |(FunDef (_, [], _)) -> sigma
-  |(FunDef (id, h :: t, sl)) -> begin
-    match paramValues with 
-    | [] -> failwith("aaa")
-    | head :: tail -> functionEnvironmentMaker (FunDef (id, t, sl)) (Env.update sigma h (eval head)) tail
-  end
-
 (*  binop op v v' = v'', where v'' is the result of applying the semantic
  *  denotation of `op` to `v` and `v''`.
  *)
@@ -352,8 +338,8 @@ let rec eval (sigmas : Frame.t) (e : E.t) (pgrm : P.t) : (Value.t * Frame.t) =
     end
   | E.Call (x, pl) -> 
     let FunDef (id, p, sl) = funLookup pgrm x in
-      let newEnv = functionEnvironmentMaker (FunDef (id, p, sl)) Env.empty pl in 
-        statement (Frame.push newEnv sigmas) (S.Block sl) pgrm  
+      let newEnv, newFrame = functionEnvironmentMaker (FunDef (id, p, sl)) Env.empty pl sigmas in 
+        (Frame.get_value (statement (Frame.push newEnv sigmas) (S.Block sl) pgrm)), newFrame
 (*! eval let !*)
 
 and statement (sigmas : Frame.t) (s : S.t) (pgrm : P.t) : Frame.t =
@@ -388,6 +374,20 @@ and statement (sigmas : Frame.t) (s : S.t) (pgrm : P.t) : Frame.t =
       end
   | S.While (e, s) -> failwith("Unimplemented")
   | S.Return e -> failwith("Unimplemented")
+
+and funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
+  match pgrm with 
+    | Pgm [] -> raise(UndefinedFunction "Function not defined")
+    | Pgm (FunDef (name,l,sl) :: tail) -> if name = id then FunDef (name,l,sl) else funLookup(Pgm tail) (id)
+
+and functionEnvironmentMaker (func : P.fundef) (sigma : Env.t) (paramValues : E.t list) (sigmas : Frame.t) : Env.t * Frame.t =
+  match func with 
+  |(FunDef (_, [], _)) -> sigma, sigmas
+  |(FunDef (id, h :: t, sl)) -> begin
+    match paramValues with 
+    | [] -> failwith("aaa")
+    | head :: tail -> functionEnvironmentMaker (FunDef (id, t, sl)) (Env.update sigma h (eval head)) tail sigmas
+  end
 
 (*  eval e = v, where _ ├ e ↓ v.
  *
