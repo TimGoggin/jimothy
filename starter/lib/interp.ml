@@ -372,7 +372,7 @@ and statement (sigmas : Frame.t) (s : S.t) (pgrm : P.t) : Frame.t =
         | Value.V_Bool false -> statement frame s' pgrm
         | _ -> failwith("ERROR: If expects an input of type bool")
       end
-  | S.While (e, s) -> failwith("Unimplemented")
+  | S.While (_e, _s) -> failwith("Unimplemented")
   | S.Return Some e -> 
     let v, _frame = eval sigmas e pgrm in
       Frame.Ret v
