@@ -337,7 +337,7 @@ let rec eval (sigmas : Frame.t) (e : E.t) (pgrm : P.t) : (Value.t * Frame.t) =
       | _ -> raise (TypeError "UNEXPECTED TYPE: ~ takes in an expression of type int")
     end
   | E.Call (x, pl) -> 
-    let FunDef (id, p, sl) = funLookup pgrm x in
+    let P.FunDef (id, p, sl) = funLookup pgrm x in
       let newEnv, newFrame = functionEnvironmentMaker (P.FunDef (id, p, sl)) Env.empty pl sigmas pgrm in 
         (Frame.get_value (statement (Frame.push newEnv sigmas) (S.Block sl) pgrm)), newFrame
 (*! eval let !*)
@@ -372,23 +372,23 @@ and statement (sigmas : Frame.t) (s : S.t) (pgrm : P.t) : Frame.t =
         | Value.V_Bool false -> statement frame s' pgrm
         | _ -> failwith("ERROR: If expects an input of type bool")
       end
-  | S.While (e, s) -> failwith("Unimplemented")
-  | S.Return e -> failwith("Unimplemented")
+  | S.While (_e, _s) -> failwith("Unimplemented")
+  | S.Return _e -> failwith("Unimplemented")
 
 and funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
   match pgrm with 
     | Pgm [] -> raise(UndefinedFunction "Function not defined")
-    | Pgm (FunDef (name,l,sl) :: tail) -> if name = id then FunDef (name,l,sl) else funLookup(Pgm tail) (id)
+    | Pgm (P.FunDef (name,l,sl) :: tail) -> if name = id then P.FunDef (name,l,sl) else funLookup(P.Pgm tail) (id)
 
 and functionEnvironmentMaker (func : P.fundef) (sigma : Env.t) (paramValues : E.t list) (sigmas : Frame.t) (pgrm : P.t) : Env.t * Frame.t =
   match func with 
-  |(FunDef (_, [], _)) -> sigma, sigmas
-  |(FunDef (id, h :: t, sl)) -> begin
+  | (P.FunDef (_, [], _)) -> sigma, sigmas
+  | (P.FunDef (id, h :: t, sl)) -> begin
     match paramValues with 
     | [] -> failwith("aaa")
     | head :: tail -> 
       let v, newFrame = eval sigmas head pgrm in 
-        functionEnvironmentMaker (FunDef (id, t, sl)) (Env.update sigma h v) tail newFrame pgrm
+        functionEnvironmentMaker (P.FunDef (id, t, sl)) (Env.update sigma h v) tail newFrame pgrm
   end
 
 (*  eval e = v, where _ ├ e ↓ v.
