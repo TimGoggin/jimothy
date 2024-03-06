@@ -372,8 +372,13 @@ and statement (sigmas : Frame.t) (s : S.t) (pgrm : P.t) : Frame.t =
         | Value.V_Bool false -> statement frame s' pgrm
         | _ -> failwith("ERROR: If expects an input of type bool")
       end
-  | S.While (_e, _s) -> failwith("Unimplemented")
-  | S.Return _e -> failwith("Unimplemented")
+  | S.While (e, s) -> failwith("Unimplemented")
+  | S.Return Some e -> 
+    let v, _frame = eval sigmas e pgrm in
+      Frame.Ret v
+  | S.Return _ -> 
+      Frame.Ret Value.V_None
+
 
 and funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
   match pgrm with 
@@ -385,7 +390,7 @@ and functionEnvironmentMaker (func : P.fundef) (sigma : Env.t) (paramValues : E.
   | (P.FunDef (_, [], _)) -> sigma, sigmas
   | (P.FunDef (id, h :: t, sl)) -> begin
     match paramValues with 
-    | [] -> failwith("aaa")
+    | [] -> failwith("ERROR: Function " ^ id ^ " takes in more arguments than you put in!")
     | head :: tail -> 
       let v, newFrame = eval sigmas head pgrm in 
         functionEnvironmentMaker (P.FunDef (id, t, sl)) (Env.update sigma h v) tail newFrame pgrm
@@ -405,7 +410,9 @@ let statement (s : S.t) (pgrm : P.t) : Frame.t =
 (* exec p :  execute the program p according to the operational semantics
  * provided as a handout.
  *)
-let exec (_ : Ast.Program.t) : unit =
-  failwith "Unimplemented:  exec"
+let exec (p : Ast.Program.t) : unit =
+  let _ = eval (E.Call ("main", [])) p in 
+    ()
+
 
 
