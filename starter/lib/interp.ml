@@ -372,10 +372,10 @@ and evalList (sigmas : Frame.t) (e : E.t list) (pgrm : P.t) (vl : Value.t list) 
    | S.Block [] -> failwith("ERROR: Empty block -- did you mean to use a skip statement?")
    | S.Block (h :: []) -> Frame.pop (statement (Frame.push Env.empty sigmas) h pgrm)
    | S.Block (h :: tail) -> 
-      let frame = (statement (Frame.push Env.empty sigmas) h pgrm) in
+      let frame = statement (Frame.push Env.empty sigmas) h pgrm in
       begin match frame with
       | E_list _ -> Frame.pop (statement frame (S.Block tail) pgrm)
-      | Ret _v -> frame
+      | Ret _ -> frame
       end
    | S.If (e, s, s') -> 
      let v, frame = eval sigmas e pgrm in
