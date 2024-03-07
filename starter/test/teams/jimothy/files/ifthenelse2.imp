@@ -1,5 +1,5 @@
 function main(){
-    if(1 > 2){
+    if(1 > 2) then {
         print_int(12);
     }
     else{
