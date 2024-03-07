@@ -224,11 +224,11 @@
        | Ret v -> failwith(Value.to_string v)
        | E_list (h :: tail) -> E_list ((Env.update h id v) :: tail)
  
-   let pop (sigmas : t) : Env.t list =
+   let pop (sigmas : t) : t =
      match sigmas with 
-     | E_list [] -> failwith("")
-     | Ret v -> failwith(Value.to_string v)
-     | E_list (_h :: tail) -> tail
+     | E_list [] -> Ret Value.V_None
+     | Ret _v -> E_list []
+     | E_list (_h :: tail) -> E_list tail
  
    let rec lookup (sigmas : t) (id : Ast.Id.t) : Value.t =
      match sigmas with
@@ -251,7 +251,7 @@
    let get_value (sigmas : t) : Value.t =
      match sigmas with
        | Ret v -> v
-       | E_list _sigmas -> failwith("no")
+       | E_list _sigmas -> Value.V_None
  
    let emptyE : t = E_list [ Env.empty ]
    let emptyF : t = Ret Value.V_Undefined
@@ -370,8 +370,8 @@ and evalList (sigmas : Frame.t) (e : E.t list) (pgrm : P.t) (vl : Value.t list) 
    | S.Expr e -> 
      let _v, sigmas = eval sigmas e pgrm in sigmas
    | S.Block [] -> failwith("ERROR: Empty block -- did you mean to use a skip statement?")
-   | S.Block (h :: []) -> statement sigmas h pgrm
-   | S.Block (h :: tail) -> statement (statement sigmas h pgrm) (S.Block tail) pgrm
+   | S.Block (h :: []) -> Frame.pop (statement (Frame.push Env.empty sigmas) h pgrm)
+   | S.Block (h :: tail) -> Frame.pop (statement (statement (Frame.push Env.empty sigmas) h pgrm) (S.Block tail) pgrm)
    | S.If (e, s, s') -> 
      let v, frame = eval sigmas e pgrm in
        begin match v with
