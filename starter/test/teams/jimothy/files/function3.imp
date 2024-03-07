@@ -2,7 +2,7 @@ function doubleatimes(a, x) {
    var i ;
    i = 0;
 
-   while i < a do {
+   while (i < a) do {
     a++;
     x = x * 2;
    }
@@ -11,7 +11,7 @@ function doubleatimes(a, x) {
 }
 
 function mod(x, mod) {
-    while x > mod do {
+    while (x > mod) do {
         x = x - mod;
     }
 
