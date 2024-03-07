@@ -12,8 +12,8 @@ function main() {
     return a;
   }
 
-  if (b = (mult(2) == c)) {
-    if (b) {
+  if (b = (mult(2) == c))  then {
+    if (b) then {
       print_bool(b);
       return;
     }
