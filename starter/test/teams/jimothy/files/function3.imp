@@ -3,7 +3,7 @@ function doubleatimes(a, x) {
    i = 0;
 
    while (i < a) do {
-    a = a + 1;
+    i = i + 1;
     x = x * 2;
    }
 
