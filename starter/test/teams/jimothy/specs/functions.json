@@ -11,26 +11,26 @@
 }
 {
     "file":     "function2.imp",
-    "input":    ["3, 2"],
+    "input":    ["3", "2"],
     "output":   ["16"]
 }
 {
     "file":     "function2.imp",
-    "input":    ["6, 5"],
+    "input":    ["6", "5"],
     "output":   ["320"]
 }
 {
     "file":     "function3.imp",
-    "input":    ["2, 3"],
+    "input":    ["2", "3"],
     "output":   ["2"]
 }
 {
     "file":     "function3.imp",
-    "input":    ["3, 4"],
+    "input":    ["3", "4"],
     "output":   ["0"]
 }
 {
     "file":     "function3.imp",
-    "input":    ["4, 7"],
+    "input":    ["4", "7"],
     "output":   ["4"]
 }

@@ -11,22 +11,22 @@
 }
 {
     "file":     "while2.imp",
-    "input":    ["2, 9"],
+    "input":    ["2", "9"],
     "output":   ["16"]
 }
 {
     "file":     "while2.imp",
-    "input":    ["3, 13"],
+    "input":    ["3", "13"],
     "output":   ["24"]
 }
 {
     "file":     "while3.imp",
-    "input":    ["0, 2"],
+    "input":    ["0", "2"],
     "output":   ["64"]
 }
 {
     "file":     "while3.imp",
-    "input":    ["2, 32"],
+    "input":    ["2", "32"],
     "output":   ["3"]
 }
 
