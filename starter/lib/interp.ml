@@ -337,11 +337,18 @@
        | _ -> raise (TypeError "UNEXPECTED TYPE: ~ takes in an expression of type int")
      end
    | E.Call (x, pl) -> 
-     let P.FunDef (id, p, sl) = funLookup pgrm x in
+     try let P.FunDef (id, p, sl) = funLookup pgrm x in
        let newEnv, newFrame = functionEnvironmentMaker (P.FunDef (id, p, sl)) Env.empty pl sigmas pgrm in 
          (Frame.get_value (statement (Frame.push newEnv sigmas) (S.Block sl) pgrm)), newFrame
+     with UndefinedFunction _ -> let vl, f = evalList sigmas pl pgrm [] in Api.do_call x vl, f
  (*! eval let !*)
  
+and evalList (sigmas : Frame.t) (e : E.t list) (pgrm : P.t) (vl : Value.t list) : Value.t list * Frame.t =
+  match e with 
+  | [] -> failwith("")
+  | h :: [] -> let v, f = eval sigmas h pgrm in v :: vl, f
+  | h :: tail -> let v, f = eval sigmas h pgrm in let vl', f' = (evalList f tail pgrm (v :: vl)) in vl', f'
+
  and statement (sigmas : Frame.t) (s : S.t) (pgrm : P.t) : Frame.t =
    match s with 
    | S.Skip -> sigmas
