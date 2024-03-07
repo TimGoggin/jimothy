@@ -1,5 +1,5 @@
 function main(){
-    if (5 > 4){
+    if (5 > 4) then {
         print_int(8);
     }
     return;
