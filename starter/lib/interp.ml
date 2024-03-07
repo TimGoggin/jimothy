@@ -350,15 +350,15 @@
      begin match h with
        | id, Some e -> 
          let v, f = eval sigmas e pgrm in
-         Frame.update f id v
-       | id, None -> Frame.update sigmas id Value.V_Undefined
+         Frame.insert f id v
+       | id, None -> Frame.insert sigmas id Value.V_Undefined
      end
    | S.VarDec (h :: tail) -> 
      begin match h with
        | id, Some e -> 
          let v, f = eval sigmas e pgrm in
-         statement (Frame.update f id v) (S.VarDec tail) pgrm
-       | id, None -> statement (Frame.update sigmas id Value.V_Undefined) (S.VarDec tail) pgrm
+         statement (Frame.insert f id v) (S.VarDec tail) pgrm
+       | id, None -> statement (Frame.insert sigmas id Value.V_Undefined) (S.VarDec tail) pgrm
      end
    | S.Expr e -> 
      let _v, sigmas = eval sigmas e pgrm in sigmas
@@ -382,7 +382,7 @@
  
  and funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
    match pgrm with 
-     | Pgm [] -> raise(UndefinedFunction "Function not defined")
+     | Pgm [] -> raise(UndefinedFunction ("Function " ^ id ^ " not defined"))
      | Pgm (P.FunDef (name,l,sl) :: tail) -> if name = id then P.FunDef (name,l,sl) else funLookup(P.Pgm tail) (id)
  
  and functionEnvironmentMaker (func : P.fundef) (sigma : Env.t) (paramValues : E.t list) (sigmas : Frame.t) (pgrm : P.t) : Env.t * Frame.t =
