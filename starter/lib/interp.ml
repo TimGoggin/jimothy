@@ -241,7 +241,7 @@
    let update (sigmas : t) (id : Ast.Id.t) (v : Value.t) : t =
      match sigmas with
      | Ret _ -> failwith("")
-     | E_list [] -> failwith("")
+     | E_list [] -> raise(Not_found)
      | E_list (h :: tail) -> 
        begin match Env.lookup h id with
          | exception Not_found -> E_list ((Env.update h id v) :: tail)
