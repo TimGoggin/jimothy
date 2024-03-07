@@ -222,7 +222,11 @@
      match sigmas with 
        | E_list [] -> failwith("") 
        | Ret v -> failwith(Value.to_string v)
-       | E_list (h :: tail) -> E_list ((Env.update h id v) :: tail)
+       | E_list (h :: tail) -> 
+        begin match Env.lookup h id with 
+        | exception Not_found -> E_list ((Env.update h id v) :: tail)
+        | _ -> raise(MultipleDeclaration id)
+        end
  
    let pop (sigmas : t) : t =
      match sigmas with 
@@ -238,14 +242,14 @@
          try Env.lookup h id
          with Not_found -> lookup (E_list tail) id
  
-   let update (sigmas : t) (id : Ast.Id.t) (v : Value.t) : t =
+   let rec update (sigmas : t) (id : Ast.Id.t) (v : Value.t) : t =
      match sigmas with
      | Ret _ -> failwith("")
-     | E_list [] -> raise(Not_found)
+     | E_list [] -> failwith("")
      | E_list (h :: tail) -> 
        begin match Env.lookup h id with
-         | exception Not_found -> E_list ((Env.update h id v) :: tail)
-         | _ -> raise (MultipleDeclaration id)
+        | exception Not_found -> update (E_list tail) id v
+        | _ -> E_list ((Env.update h id v) :: tail)
        end
  
    let get_value (sigmas : t) : Value.t =
