@@ -10,9 +10,9 @@ function doubleatimes(a, x) {
    return x;
 }
 
-function mod(x, mod) {
-    while (x > mod) do {
-        x = x - mod;
+function mod(x, m) {
+    while (x > m) do {
+        x = x - m;
     }
 
     return x;
