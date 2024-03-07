@@ -371,7 +371,12 @@ and evalList (sigmas : Frame.t) (e : E.t list) (pgrm : P.t) (vl : Value.t list) 
      let _v, sigmas = eval sigmas e pgrm in sigmas
    | S.Block [] -> failwith("ERROR: Empty block -- did you mean to use a skip statement?")
    | S.Block (h :: []) -> Frame.pop (statement (Frame.push Env.empty sigmas) h pgrm)
-   | S.Block (h :: tail) -> Frame.pop (statement (statement (Frame.push Env.empty sigmas) h pgrm) (S.Block tail) pgrm)
+   | S.Block (h :: tail) -> 
+      let frame = (statement (Frame.push Env.empty sigmas) h pgrm) in
+      begin match frame with
+      | E_list _ -> Frame.pop (statement frame (S.Block tail) pgrm)
+      | Ret _v -> frame
+      end
    | S.If (e, s, s') -> 
      let v, frame = eval sigmas e pgrm in
        begin match v with
@@ -379,7 +384,18 @@ and evalList (sigmas : Frame.t) (e : E.t list) (pgrm : P.t) (vl : Value.t list) 
          | Value.V_Bool false -> statement frame s' pgrm
          | _ -> failwith("ERROR: If expects an input of type bool")
        end
-   | S.While (_e, _s) -> failwith("Unimplemented")
+   | S.While (e, s) -> 
+      let v, f' = eval sigmas e pgrm in 
+      begin match v with
+        | Value.V_Bool false -> f'
+        | Value.V_Bool true -> 
+          let frame = statement f' s pgrm in
+          begin match frame with
+            | Frame.E_list _ -> statement frame (S.While (e, s)) pgrm
+            | Frame.Ret _ -> frame
+          end
+        | _ -> failwith("ERROR: While expects an input of type bool")
+        end
    | S.Return Some e -> 
      let v, _frame = eval sigmas e pgrm in
        Frame.Ret v
