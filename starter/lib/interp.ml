@@ -203,6 +203,15 @@
   * Frames can either be lists of environments, or they can be return frames,
   * the output of functions. We use two constructors here to represent them both.
   *)
+ let rec update' (sigmas : Env.t list) (id : Ast.Id.t) (v : Value.t) : Env.t list =
+  match sigmas with
+  | [] -> failwith("")
+  | (h :: tail) -> 
+    begin match Env.lookup h id with
+     | exception Not_found -> (h :: update' tail id v)
+     | _ -> ((Env.update h id v) :: tail)
+    end
+
  module Frame = struct
  
    type t = 
@@ -242,15 +251,11 @@
          try Env.lookup h id
          with Not_found -> lookup (E_list tail) id
  
-   let rec update (sigmas : t) (id : Ast.Id.t) (v : Value.t) : t =
+   let update (sigmas : t) (id : Ast.Id.t) (v : Value.t) : t =
      match sigmas with
      | Ret _ -> failwith("")
      | E_list [] -> failwith("")
-     | E_list (h :: tail) -> 
-       begin match Env.lookup h id with
-        | exception Not_found -> update (E_list tail) id v
-        | _ -> E_list ((Env.update h id v) :: tail)
-       end
+     | E_list (h :: tail) -> E_list (update' (h :: tail) id v) 
  
    let get_value (sigmas : t) : Value.t =
      match sigmas with
