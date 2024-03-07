@@ -5,12 +5,10 @@ function main(){
     a = prompt_int("enter: ") ;
     b = 0;
 
-    print_str("test");
 
     while b < 5 do {
         a = a + 1;
         b = b + 1;
-        print_int(b);
     }
 
     print_int(a);
