@@ -2,7 +2,7 @@ function doubleatimes(a, x) {
    var i ;
    i = 0;
 
-   while i < a do {
+   while (i < a) do {
     a++;
     x = x * 2;
    }
