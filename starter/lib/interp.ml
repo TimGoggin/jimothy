@@ -405,8 +405,8 @@ and evalList (sigmas : Frame.t) (e : E.t list) (pgrm : P.t) (vl : Value.t list) 
  
  and funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
    match pgrm with 
-     | Pgm [] -> raise(UndefinedFunction id)
-     | Pgm (P.FunDef (name,l,sl) :: tail) -> if name = id then P.FunDef (name,l,sl) else funLookup(P.Pgm tail) (id)
+     | P.Pgm [] -> raise(UndefinedFunction id)
+     | P.Pgm (P.FunDef (name,l,sl) :: tail) -> if name = id then P.FunDef (name,l,sl) else funLookup(P.Pgm tail) (id)
  
  and functionEnvironmentMaker (func : P.fundef) (sigma : Env.t) (paramValues : E.t list) (sigmas : Frame.t) (pgrm : P.t) : Env.t * Frame.t =
    match func with 
