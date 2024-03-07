@@ -5,7 +5,7 @@ function main() {
   a = prompt_bool("enter: ");
   b = prompt_bool("enter: ")
 
-  if (a = a || b) {
+  if (a = a || b) then{
     print_bool(a);
     return;
   }
