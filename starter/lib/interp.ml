@@ -233,7 +233,7 @@
    let rec lookup (sigmas : t) (id : Ast.Id.t) : Value.t =
      match sigmas with
      | Ret _ -> failwith("")
-     | E_list [] -> raise(UnboundVariable ("ERROR: " ^ id ^ " not found"))
+     | E_list [] -> raise(UnboundVariable id)
      | E_list (h :: tail) -> 
          try Env.lookup h id
          with Not_found -> lookup (E_list tail) id
@@ -245,7 +245,7 @@
      | E_list (h :: tail) -> 
        begin match Env.lookup h id with
          | exception Not_found -> E_list ((Env.update h id v) :: tail)
-         | _ -> raise (MultipleDeclaration ("MULTIPLE DECLARATION: " ^ id ^ " already exists!"))
+         | _ -> raise (MultipleDeclaration id)
        end
  
    let get_value (sigmas : t) : Value.t =
@@ -382,7 +382,7 @@
  
  and funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
    match pgrm with 
-     | Pgm [] -> raise(UndefinedFunction ("Function " ^ id ^ " not defined"))
+     | Pgm [] -> raise(UndefinedFunction id)
      | Pgm (P.FunDef (name,l,sl) :: tail) -> if name = id then P.FunDef (name,l,sl) else funLookup(P.Pgm tail) (id)
  
  and functionEnvironmentMaker (func : P.fundef) (sigma : Env.t) (paramValues : E.t list) (sigmas : Frame.t) (pgrm : P.t) : Env.t * Frame.t =
