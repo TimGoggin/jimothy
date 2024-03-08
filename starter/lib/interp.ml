@@ -218,18 +218,15 @@
      | Ret of Value.t
      | E_list of Env.t list
  
-     (**
-   Both of these functions need to have the type of sigmas changed to E_list but this is proving harder than it should be
-  *)
- (**push sigma sigmas -> sigma :: sigmas
-     Pushes a sigma onto a list of sigmas at the head **)
+ (* push sigma sigmas -> sigma :: sigmas
+     Pushes a sigma onto a list of sigmas at the head *)
    let push (sigma : Env.t) (sigmas : t) : t = 
      match sigmas with
      | E_list sigmas -> E_list (sigma :: sigmas)
      | Ret v -> failwith(Value.to_string v)
  
      (*insert sigmas id v -> sigmas', where sigmas'[0] = sigmas[0] :: {id -> v}
-        Inserts a id/value pair into the head of sigmas*)
+        Inserts a id/value pair into the head of sigmas *)
    let insert (sigmas : t) (id : Ast.Id.t)(v : Value.t) : t  = 
      match sigmas with 
        | E_list [] -> failwith("") 
@@ -240,16 +237,16 @@
         | _ -> raise(MultipleDeclaration id)
         end
  
-     (*pop sigmas h::t -> t
-        Removes the head of the list of sigmas from sigmas*)   
+     (*pop sigmas h :: t -> t
+        Removes the head of the list of sigmas from sigmas *)   
    let pop (sigmas : t) : t =
      match sigmas with 
      | E_list [] -> Ret Value.V_None
      | Ret _v -> E_list []
      | E_list (_h :: tail) -> E_list tail
  
-    (*lookup sigmas id -> v, where {id -> v} is in sigmas 
-       and where v is the value of the iteration if id closest to the head of sigmas*)
+    (*lookup sigmas id -> v
+       Returns the first occurence of a binding of {id -> v} in sigmas *)
      let rec lookup (sigmas : t) (id : Ast.Id.t) : Value.t =
      match sigmas with
      | Ret _ -> failwith("")
@@ -260,8 +257,8 @@
  
 
     (*update sigmas id v -> sigmas'
-       where sigmas' is sigmas but with the value of id changed to v in the defenition 
-       closest to the head*)
+       where sigmas' is sigmas but with the value of id changed to v in the definition 
+       closest to the head *)
    let update (sigmas : t) (id : Ast.Id.t) (v : Value.t) : t =
      match sigmas with
      | Ret _ -> failwith("")
@@ -369,10 +366,12 @@ let rec strMult (s : string) (n : int) : string =
        let newEnv, newFrame = functionEnvironmentMaker (P.FunDef (id, p, sl)) Env.empty pl sigmas pgrm in 
          (Frame.get_value (statement (Frame.push newEnv sigmas) (S.Block sl) pgrm)), newFrame
      with UndefinedFunction _ -> let vl, f = evalList sigmas pl pgrm [] in Api.do_call x vl, f
- (*evalList sigmas e pgrm vl -> (vl',sigmas')
+ 
+(*evalList sigmas e pgrm vl -> (vl', sigmas')
     Takes a list of expressions, a frame to start with, a program, and a list of values which starts out empty
     Evaluates each expression, changes the frame as appropriate, and concats the value onto the value list
-    Returns the list of values and the end frame *)
+    Returns the list of values and the end frame.
+    Used for the Api functions, which take in Value.t lists as opposed to E.t lists *)
 and evalList (sigmas : Frame.t) (e : E.t list) (pgrm : P.t) (vl : Value.t list) : Value.t list * Frame.t =
   match e with 
   | [] -> failwith("")
@@ -430,9 +429,9 @@ and evalList (sigmas : Frame.t) (e : E.t list) (pgrm : P.t) (vl : Value.t list) 
        Frame.Ret v
    | S.Return _ -> 
        Frame.Ret Value.V_None
- (*Helper function for evaluating blocks.contents
+ (*Helper function for evaluating blocks.
     sequence sigmas sl pgrm -> sigmas'
-    where sigmas' is the result of executing the block statement*)
+    where sigmas' is the result of executing each statement in the block. *)
 and sequence (sigmas : Frame.t) (sl : S.t list) (pgrm : P.t) : Frame.t =
   match sl with 
    | [] -> failwith("ERROR: Empty block -- did you mean to use a skip statement?")
@@ -445,17 +444,17 @@ and sequence (sigmas : Frame.t) (sl : S.t list) (pgrm : P.t) : Frame.t =
       end
  
   (*funLookup pgrm f -> funDef
-     where funDef is the defenition of the function f in the program pgrm *)
+     where funDef is the definition of the function f in the program pgrm *)
  and funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
    match pgrm with 
      | P.Pgm [] -> raise(UndefinedFunction id)
      | P.Pgm (P.FunDef (name,l,sl) :: tail) -> if name = id then P.FunDef (name,l,sl) else funLookup(P.Pgm tail) (id)
  
-     (*Helper function for making environents populated with function arguments
-        functionEnvironmentMaker f sigma params sigmas pgrm -> sigma sigmas'
-        where sigma is an environment populated with the correct id value pairs from the parameters
-        and sigmas' is the result of evaluating all the paramValues under successive sigmas
-        *)
+  (*Helper function for making environents populated with function arguments.
+    functionEnvironmentMaker f sigma params sigmas pgrm -> sigma sigmas'
+    where sigma is an environment populated with the correct id value pairs from the parameters
+    and sigmas' is the result of evaluating all the paramValues under successive sigmas
+    *)
  and functionEnvironmentMaker (func : P.fundef) (sigma : Env.t) (paramValues : E.t list) (sigmas : Frame.t) (pgrm : P.t) : Env.t * Frame.t =
    match func with 
    | (P.FunDef (_, [], _)) -> sigma, sigmas
