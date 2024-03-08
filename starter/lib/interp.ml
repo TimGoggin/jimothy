@@ -348,7 +348,7 @@
    | E.Call (x, pl) -> 
      try let P.FunDef (id, p, sl) = funLookup pgrm x in
        let newEnv, newFrame = functionEnvironmentMaker (P.FunDef (id, p, sl)) Env.empty pl sigmas pgrm in 
-         (Frame.get_value (statement (Frame.push newEnv sigmas) (S.Block sl) pgrm)), newFrame
+         (Frame.get_value (statement (Frame.push newEnv sigmas) (S.Block sl) pgrm)), Frame.pop newFrame
      with UndefinedFunction _ -> let vl, f = evalList sigmas pl pgrm [] in Api.do_call x vl, f
  (*! eval let !*)
  
