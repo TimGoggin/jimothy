@@ -348,7 +348,7 @@
    | E.Call (x, pl) -> 
      try let P.FunDef (id, p, sl) = funLookup pgrm x in
        let newEnv, newFrame = functionEnvironmentMaker (P.FunDef (id, p, sl)) Env.empty pl sigmas pgrm in 
-         (Frame.get_value (statement (Frame.push newEnv sigmas) (S.Block sl) pgrm)), Frame.pop newFrame
+         (Frame.get_value (statement (Frame.push newEnv sigmas) (S.Block sl) pgrm)), newFrame
      with UndefinedFunction _ -> let vl, f = evalList sigmas pl pgrm [] in Api.do_call x vl, f
  (*! eval let !*)
  
@@ -378,13 +378,10 @@ and evalList (sigmas : Frame.t) (e : E.t list) (pgrm : P.t) (vl : Value.t list) 
      end
    | S.Expr e -> 
      let _v, sigmas = eval sigmas e pgrm in sigmas
-   | S.Block [] -> failwith("ERROR: Empty block -- did you mean to use a skip statement?")
-   | S.Block (h :: []) -> Frame.pop (statement (Frame.push Env.empty sigmas) h pgrm)
-   | S.Block (h :: tail) -> 
-      let frame = statement (Frame.push Env.empty sigmas) h pgrm in
-      begin match frame with
-      | E_list _ -> Frame.pop (statement frame (S.Block tail) pgrm)
-      | Ret _ -> frame
+   | S.Block sl -> let f = sequence (Frame.push Env.empty sigmas) sl pgrm in
+      begin match f with
+      | Frame.E_list _ -> Frame.pop f
+      | Frame.Ret _ -> f
       end
    | S.If (e, s, s') -> 
      let v, frame = eval sigmas e pgrm in
@@ -411,6 +408,16 @@ and evalList (sigmas : Frame.t) (e : E.t list) (pgrm : P.t) (vl : Value.t list) 
    | S.Return _ -> 
        Frame.Ret Value.V_None
  
+and sequence (sigmas : Frame.t) (sl : S.t list) (pgrm : P.t) : Frame.t =
+  match sl with 
+   | [] -> failwith("ERROR: Empty block -- did you mean to use a skip statement?")
+   | (h :: []) -> statement sigmas h pgrm
+   | (h :: tail) -> 
+      let frame = statement sigmas h pgrm in
+      begin match frame with
+      | E_list _ -> sequence frame tail pgrm
+      | Ret _ -> frame
+      end
  
  and funLookup (pgrm : P.t) (id : Ast.Id.t) : P.fundef  =
    match pgrm with 
