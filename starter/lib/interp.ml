@@ -280,19 +280,25 @@
      
  end
  
+let rec strMult (s : string) (n : int) : string =
+  if n >= 1 then s ^ strMult s (n - 1) else ""
+
  (*  binop op v v' = v'', where v'' is the result of applying the semantic
   *  denotation of `op` to `v` and `v''`.
   *)
   let binop (op : E.binop) (v : Value.t) (v' : Value.t) : Value.t =
    match (op, v, v') with
    | (E.Plus, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n + n')
-   | (E.Plus, _, _) -> raise (TypeError "UNEXPECTED TYPE: + takes input of int and int")
+   | (E.Plus, Value.V_Str s, Value.V_Str s') -> Value.V_Str (s ^ s')
+   | (E.Plus, _, _) -> raise (TypeError "UNEXPECTED TYPE: + takes input of int and int or str and str")
  
    | (E.Minus, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n - n')
    | (E.Minus, _, _) -> raise (TypeError "UNEXPECTED TYPE: - takes input of int and int")
  
    | (E.Times, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n * n')
-   | (E.Times, _, _) -> raise (TypeError "UNEXPECTED TYPE: * takes input of int and int")
+   | (E.Times, Value.V_Str s, Value.V_Int n) -> Value.V_Str (strMult s n)
+   | (E.Times, Value.V_Int n, Value.V_Str s) -> Value.V_Str (strMult s n)
+   | (E.Times, _, _) -> raise (TypeError "UNEXPECTED TYPE: * takes input of int and int or int and str")
    
    | (E.Div, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n / n')
    | (E.Div, _, _) -> raise (TypeError "UNEXPECTED TYPE: / takes input of int and int")

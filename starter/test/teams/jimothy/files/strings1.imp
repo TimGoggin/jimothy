@@ -1,0 +1,10 @@
+function main(){
+    var a ;
+    var b ;
+
+    a = prompt_str("enter: ") ;
+    b = prompt_int("enter: ");
+
+    print_str(a * b);
+    return;
+}
