@@ -1,12 +1,36 @@
 {
-    "file":     "expl00.imp",
+    "file":     "explicit1.imp",
     "input":    ["0"],
     "except":   "SecurityError"
 }
 
 {
-    "file":     "expl05.imp",
+    "file":     "explicit2.imp",
     "input":    ["0"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "explicit3.imp",
+    "input":    ["true"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "explicit4.imp",
+    "input":    ["false"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "explicit5.imp",
+    "input":    ["hi!"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "explicit6.imp",
+    "input":    ["hi!"],
     "except":   "SecurityError"
 }
 
