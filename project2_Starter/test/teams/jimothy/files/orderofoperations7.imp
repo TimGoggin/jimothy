@@ -1,0 +1,7 @@
+function main() {
+  var a = false || (true && false);
+
+  print_bool(a) ;
+
+  return ;
+}

@@ -1,0 +1,7 @@
+function main() {
+  var a = 6 + 4 * 2;
+
+  print_int(a) ;
+
+  return ;
+}

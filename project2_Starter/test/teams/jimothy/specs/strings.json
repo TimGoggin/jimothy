@@ -1,0 +1,12 @@
+
+{
+    "file":     "strings1.imp",
+    "input":    ["hi!", "3"],
+    "output":   ["hi!hi!hi!"]
+}
+{
+    "file":     "strings2.imp",
+    "input":    ["hey!", "hellothere!"],
+    "output":   ["hey!hellothere!"]
+}
+

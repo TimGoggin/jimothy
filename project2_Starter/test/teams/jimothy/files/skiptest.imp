@@ -1,0 +1,9 @@
+function main(){
+    if (2 < 3) then {
+        skip;
+
+    }
+    print_int(1);
+    return;
+}
+

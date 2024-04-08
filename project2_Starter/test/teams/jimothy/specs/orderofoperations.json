@@ -1,0 +1,38 @@
+
+{
+    "file":     "orderofoperations1.imp",
+    "input":    [],
+    "output":   ["8"]
+}
+{
+    "file":     "orderofoperations2.imp",
+    "input":    [],
+    "output":   ["14"]
+}
+{
+    "file":     "orderofoperations3.imp",
+    "input":    [],
+    "output":   ["10"]
+}
+{
+    "file":     "orderofoperations4.imp",
+    "input":    [],
+    "output":   ["6"]
+}
+{
+    "file":     "orderofoperations5.imp",
+    "input":    [],
+    "output":   ["false"]
+}
+{
+    "file":     "orderofoperations6.imp",
+    "input":    [],
+    "output":   ["true"]
+}
+{
+    "file":     "orderofoperations7.imp",
+    "input":    [],
+    "output":   ["false"]
+}
+
+
