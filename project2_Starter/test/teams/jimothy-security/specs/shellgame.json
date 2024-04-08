@@ -1,0 +1,20 @@
+{
+    "file":     "shellgame0.imp",
+    "input":    ["3"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "shellgame1.imp",
+    "input":    ["False",
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "shellgame2.imp",
+    "input":    ["I love oCaml"],
+    "except":   "SecurityError"
+}
+
+
+
