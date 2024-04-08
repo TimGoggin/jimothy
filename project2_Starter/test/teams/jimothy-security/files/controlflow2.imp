@@ -1,8 +1,11 @@
 
 function main() {
+    var y = get_int_s();
     var x = 0;
 
-    x = get_int_s();
+    if (y < 5) {
+        x = 5;
+    }
 
     print_int(x);
 

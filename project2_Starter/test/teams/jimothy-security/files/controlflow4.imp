@@ -1,0 +1,14 @@
+
+function main() {
+    var b = get_bool_s();
+    var x = 3;
+    var y = 3;
+
+    if (b) {
+        x = x + y;
+    }
+
+    print_int(x);
+
+    return;
+}

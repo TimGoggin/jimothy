@@ -4,7 +4,7 @@ function main() {
 
     x = get_bool_s();
 
-    print(x);
+    print_bool(x);
 
     return;
 }

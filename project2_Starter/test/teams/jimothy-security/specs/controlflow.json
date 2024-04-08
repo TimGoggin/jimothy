@@ -1,0 +1,51 @@
+{
+    "file":     "controlflow1.imp",
+    "input":    ["true"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "controlflow1.imp",
+    "input":    ["false"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "controlflow2.imp",
+    "input":    ["0"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "controlflow2.imp",
+    "input":    ["6"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "controlflow3.imp",
+    "input":    ["hi"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "controlflow3.imp",
+    "input":    ["iloveoCaml"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "controlflow4.imp",
+    "input":    ["true"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "controlflow4.imp",
+    "input":    ["false"],
+    "except":   "SecurityError"
+}
+
+
+
+

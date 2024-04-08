@@ -1,8 +1,11 @@
 
 function main() {
+    var s = get_str_s();
     var x = 0;
 
-    x = get_int_s();
+    if (s = "hi") {
+        x = 5;
+    }
 
     print_int(x);
 
