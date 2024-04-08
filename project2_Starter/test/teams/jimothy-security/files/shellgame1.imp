@@ -1,0 +1,6 @@
+function main(){
+    var x = get_int_s();
+    var y = x + 1
+    print_int(y-1);
+    return;
+}
