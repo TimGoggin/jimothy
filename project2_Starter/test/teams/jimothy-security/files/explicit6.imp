@@ -1,0 +1,10 @@
+
+function main() {
+    var x = "";
+
+    x = get_str_s();
+
+    print(x);
+
+    return;
+}

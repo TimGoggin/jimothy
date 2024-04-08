@@ -1,0 +1,10 @@
+
+function main() {
+    var x = true;
+
+    x = get_bool_s();
+
+    print(x);
+
+    return;
+}

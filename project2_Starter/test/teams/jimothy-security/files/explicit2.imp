@@ -1,0 +1,10 @@
+
+function main() {
+    var x = 0;
+
+    x = get_int_s();
+
+    print(x);
+
+    return;
+}
