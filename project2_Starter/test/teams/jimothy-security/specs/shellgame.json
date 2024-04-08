@@ -1,17 +1,17 @@
 {
-    "file":     "shellgame0.imp",
+    "file":     "shellgame1.imp",
     "input":    ["3"],
     "except":   "SecurityError"
 }
 
 {
-    "file":     "shellgame1.imp",
-    "input":    ["False",
+    "file":     "shellgame2.imp",
+    "input":    ["False"],
     "except":   "SecurityError"
 }
 
 {
-    "file":     "shellgame2.imp",
+    "file":     "shellgame3.imp",
     "input":    ["I love oCaml"],
     "except":   "SecurityError"
 }
