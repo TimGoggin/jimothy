@@ -46,6 +46,30 @@
     "except":   "SecurityError"
 }
 
+{
+    "file":     "controlflow5.imp",
+    "input":    ["3"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "controlflow5.imp",
+    "input":    ["8"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "controlflow6.imp",
+    "input":    ["3"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "controlflow6.imp",
+    "input":    ["8"],
+    "except":   "SecurityError"
+}
+
 
 
 

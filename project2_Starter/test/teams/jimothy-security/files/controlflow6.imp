@@ -1,0 +1,17 @@
+
+function main() {
+    var x = get_int_s();
+
+    var y = 0;
+
+    while (y < 5) {
+        if (y == x) {
+            return;
+        }
+
+        y = y + 1;
+    }
+
+    print(y);
+    return;
+}
