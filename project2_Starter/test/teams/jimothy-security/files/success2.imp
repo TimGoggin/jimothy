@@ -2,10 +2,10 @@
 function main() {
     var y = get_int_s();
     while y < 5 do {
-        y = y + 1
+        y = y + 1;
     }
 
-    print_int(8)
+    print_int(8);
 
 
     return;
