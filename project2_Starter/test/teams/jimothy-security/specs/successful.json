@@ -1,12 +1,12 @@
 {
     "file":     "success1.imp",
-    "input":    ["11, 3"],
+    "input":    ["11", "3"],
     "except":   "SecurityError"
 }
 
 {
     "file":     "success1.imp",
-    "input":    ["11, 8"],
+    "input":    ["11", "8"],
     "output":   ["8"]
 }
 
@@ -31,5 +31,11 @@
 {
     "file":     "success5.imp",
     "input":    ["true"],
+    "output":   ["true"]
+}
+
+{
+    "file":     "success6.imp",
+    "input":    ["0, 3, 0"],
     "output":   ["true"]
 }

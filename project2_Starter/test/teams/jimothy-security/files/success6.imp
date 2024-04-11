@@ -1,0 +1,18 @@
+
+function main() {
+    var x = get_int_s();
+    var y = get_int_s();
+    var z = get_int();
+
+    while (z < 5) do {
+        if (x == y) then {
+            return;
+        }
+
+        x = x + 1;
+        z = z + 1;
+    }
+
+    print(z);
+    return;
+}
