@@ -1,11 +1,18 @@
 {
-    "file":     "explicit1.imp",
+    "file":     "success1.imp",
     "input":    ["11, 3"],
     "except":   "SecurityError"
 }
 
 {
-    "file":     "explicit1.imp",
+    "file":     "success1.imp",
     "input":    ["11, 8"],
     "output":   ["8"]
 }
+
+{
+    "file":     "success2.imp",
+    "input":    ["3"],
+    "output":   ["8"]
+}
+
