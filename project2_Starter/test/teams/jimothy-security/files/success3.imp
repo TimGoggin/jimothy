@@ -1,0 +1,8 @@
+
+function main() {
+    var x = get_str();
+
+    print_str(x);
+
+    return;
+}
