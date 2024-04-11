@@ -16,3 +16,20 @@
     "output":   ["8"]
 }
 
+{
+    "file":     "success3.imp",
+    "input":    ["hi"],
+    "output":   ["hi"]
+}
+
+{
+    "file":     "success4.imp",
+    "input":    ["3"],
+    "output":   ["3"]
+}
+
+{
+    "file":     "success5.imp",
+    "input":    ["true"],
+    "output":   ["true"]
+}
