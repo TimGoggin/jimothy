@@ -1,0 +1,8 @@
+
+function main() {
+    var x = get_bool();
+
+    print_bool(x);
+
+    return;
+}
