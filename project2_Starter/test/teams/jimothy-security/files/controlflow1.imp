@@ -3,7 +3,7 @@ function main() {
     var b = get_bool_s();
     var x = 0;
 
-    if (b) {
+    if (b) then {
         x = 5;
     }
 

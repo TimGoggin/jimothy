@@ -4,8 +4,8 @@ function main() {
 
     var y = 0;
 
-    while (y < 5) {
-        if (y == x) {
+    while (y < 5) do {
+        if (y == x) then {
             print(y);
             return;
         }

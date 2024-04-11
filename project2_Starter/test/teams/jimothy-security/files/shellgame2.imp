@@ -1,5 +1,5 @@
 function main(){
     var x = get_bool_s();
-    print_bool(!x)
-    return
+    print_bool(!x);
+    return;
 }

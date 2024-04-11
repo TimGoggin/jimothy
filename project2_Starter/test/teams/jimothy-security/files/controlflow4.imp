@@ -4,7 +4,7 @@ function main() {
     var x = 3;
     var y = 3;
 
-    if (b) {
+    if (b) then {
         x = x + y;
     }
 

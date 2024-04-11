@@ -3,7 +3,7 @@ function main() {
     var y = get_int_s();
     var x = 0;
 
-    if (y < 5) {
+    if (y < 5) then {
         x = 5;
     }
 

@@ -1,0 +1,14 @@
+
+function main() {
+    var y = get_int_s();
+    var x = get_int();
+
+    if (x < 7) then {
+        print(y);
+    }
+    else {
+        print(x);
+    }
+
+    return;
+}

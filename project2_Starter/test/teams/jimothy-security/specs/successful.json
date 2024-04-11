@@ -1,0 +1,11 @@
+{
+    "file":     "explicit1.imp",
+    "input":    ["11, 3"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "explicit1.imp",
+    "input":    ["11, 8"],
+    "output":   ["8"]
+}

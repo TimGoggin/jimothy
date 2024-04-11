@@ -1,5 +1,5 @@
 function main(){
     var x = get_str_s();
-    var y = x
-    print_str_s(y)
+    var y = x;
+    print_str_s(y);
 }
