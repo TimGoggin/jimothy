@@ -40,15 +40,22 @@ exception SecurityError
 let impossible (s : string) : 'a =
   failwith @@ "Impossible: " ^ s
 
+module Sec = struct
+  type t =
+    | Low
+    | High
+    [@@deriving show]
+end
+
 (* Values.
  *)
 module Value = struct
   type t = 
     | V_Undefined
-    | V_None
-    | V_Int of int
-    | V_Bool of bool
-    | V_Str of string
+    | V_None of Sec.t
+    | V_Int of int * Sec.t
+    | V_Bool of bool * Sec.t
+    | V_Str of string * Sec.t
     [@@deriving show]
 
   (* to_string v = a string representation of v (more human-readable than
@@ -57,10 +64,10 @@ module Value = struct
   let to_string (v : t) : string =
     match v with
     | V_Undefined -> "?"
-    | V_None -> "None"
-    | V_Int n -> Int.to_string n
-    | V_Bool b -> Bool.to_string b
-    | V_Str s -> s
+    | V_None _l -> "None"
+    | V_Int (n, _l) -> Int.to_string n
+    | V_Bool (b, _l) -> Bool.to_string b
+    | V_Str (s, _l) -> s
 end
 
 module Frame = struct
