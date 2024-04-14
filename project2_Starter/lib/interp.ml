@@ -45,6 +45,13 @@ module Sec = struct
     | Low
     | High
     [@@deriving show]
+
+  let combine (l : t) (l' : t) : t =
+    match (l, l') with
+    | (Low, Low) -> Low
+    | (Low, High) -> High
+    | (High, Low) -> High
+    | (High, High) -> High
 end
 
 (* Values.
@@ -273,7 +280,7 @@ module Api = struct
          match vs with
          | [Value.V_Str (s, Low)] -> 
            outputnl (!out_channel) s ; Value.V_None Low
-         | [Value.V_Str (s, High)] -> raise @@ SecurityError
+         | [Value.V_Str (_s, High)] -> raise @@ SecurityError
          | _ -> raise @@ TypeError "Bad argument type for print_s"
       )
     ; ("get_str", fun vs ->
@@ -364,19 +371,27 @@ end
  *)
 let binop (op : E.binop) (v : Value.t) (v' : Value.t) : Value.t =
   match (op, v, v') with
-  | (E.Plus, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n + n')
-  | (E.Minus, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n - n')
-  | (E.Times, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n * n')
-  | (E.Div, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n / n')
-  | (E.Mod, Value.V_Int n, Value.V_Int n') -> Value.V_Int (n mod n')
-  | (E.And, Value.V_Bool b, Value.V_Bool b') -> Value.V_Bool (b && b')
-  | (E.Or, Value.V_Bool b, Value.V_Bool b') -> Value.V_Bool (b || b')
-  | (E.Eq, v, v') -> Value.V_Bool (v = v')
-  | (E.Ne, v, v') -> Value.V_Bool (v <> v')
-  | (E.Lt, Value.V_Int n, Value.V_Int n') -> Value.V_Bool (n < n')
-  | (E.Le, Value.V_Int n, Value.V_Int n') -> Value.V_Bool (n <= n')
-  | (E.Gt, Value.V_Int n, Value.V_Int n') -> Value.V_Bool (n > n')
-  | (E.Ge, Value.V_Int n, Value.V_Int n') -> Value.V_Bool (n >= n')
+  | (E.Plus, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Int (n + n', Sec.combine l l')
+  | (E.Minus, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Int (n - n', Sec.combine l l')
+  | (E.Times, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Int (n * n', Sec.combine l l')
+  | (E.Div, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Int (n / n', Sec.combine l l')
+  | (E.Mod, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Int (n mod n', Sec.combine l l')
+  
+  | (E.And, Value.V_Bool (b, l), Value.V_Bool (b', l')) -> Value.V_Bool (b && b', Sec.combine l l')
+  | (E.Or, Value.V_Bool (b, l), Value.V_Bool (b', l')) -> Value.V_Bool (b || b', Sec.combine l l')
+
+  | (E.Eq, Value.V_Int (v, l), Value.V_Int (v', l')) -> Value.V_Bool (v = v', Sec.combine l l')
+  | (E.Eq, Value.V_Str (v, l), Value.V_Str (v', l')) -> Value.V_Bool (v = v', Sec.combine l l')
+  | (E.Eq, Value.V_Bool (v, l), Value.V_Bool (v', l')) -> Value.V_Bool (v = v', Sec.combine l l')
+
+  | (E.Ne, Value.V_Int (v, l), Value.V_Int (v', l')) -> Value.V_Bool (v <> v', Sec.combine l l')
+  | (E.Ne, Value.V_Str (v, l), Value.V_Str (v', l')) -> Value.V_Bool (v <> v', Sec.combine l l')
+  | (E.Ne, Value.V_Bool (v, l), Value.V_Bool (v', l')) -> Value.V_Bool (v <> v', Sec.combine l l')
+
+  | (E.Lt, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Bool (n < n', Sec.combine l l')
+  | (E.Le, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Bool (n <= n', Sec.combine l l')
+  | (E.Gt, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Bool (n > n', Sec.combine l l')
+  | (E.Ge, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Bool (n >= n', Sec.combine l l')
   | _ -> raise @@
          TypeError (
            Printf.sprintf "Bad operand types: %s %s %s"
