@@ -456,9 +456,9 @@ let exec (p : Ast.Program.t) : unit =
     | Frame.Envs [] -> fun _ -> impossible "exec with empty environment frame."
     | eta -> function
       | E.Var x -> (Frame.lookup eta x, eta)
-      | E.Num n -> (Value.V_Int n, eta)
-      | E.Bool b -> (Value.V_Bool b, eta)
-      | E.Str s -> (Value.V_Str s, eta)
+      | E.Num n -> (Value.V_Int (n, Low), eta)
+      | E.Bool b -> (Value.V_Bool (b, Low), eta)
+      | E.Str s -> (Value.V_Str (s, Low), eta)
       | E.Assign (x, e) ->
         let (v, eta') = eval eta e
         in (v, Frame.set eta' x v)
@@ -470,7 +470,7 @@ let exec (p : Ast.Program.t) : unit =
         let (v, eta') = eval eta e in
         (
           match v with
-          | Value.V_Int n -> (Value.V_Int (-n), eta')
+          | Value.V_Int (n, l) -> (Value.V_Int (-n, l), eta')
           | _ -> raise @@
                  TypeError (
                    Printf.sprintf "Bad operand type: -%s" 
@@ -481,7 +481,7 @@ let exec (p : Ast.Program.t) : unit =
         let (v, eta') = eval eta e in
         (
           match v with
-          | Value.V_Bool b -> (Value.V_Bool (not b), eta')
+          | Value.V_Bool (b, l) -> (Value.V_Bool (not b, l), eta')
           | _ -> raise @@
                  TypeError (
                    Printf.sprintf "Bad operand type: !%s" 
