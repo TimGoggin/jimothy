@@ -52,6 +52,12 @@ module Sec = struct
     | (Low, High) -> High
     | (High, Low) -> High
     | (High, High) -> High
+
+  let rec combine_many (l : t list) : t =
+    match l with
+    | High :: _ -> High
+    | Low :: tail -> combine_many(tail)
+    | [] -> Low
 end
 
 (* Values.
