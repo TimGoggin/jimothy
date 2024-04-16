@@ -4,10 +4,10 @@ function main() {
     var x = get_int();
 
     if (x < 7) then {
-        print(y);
+        print_int(y);
     }
     else {
-        print(x);
+        print_int(x);
     }
 
     return;
