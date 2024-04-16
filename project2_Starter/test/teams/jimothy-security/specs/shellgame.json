@@ -6,7 +6,7 @@
 
 {
     "file":     "shellgame2.imp",
-    "input":    ["False"],
+    "input":    ["false"],
     "except":   "SecurityError"
 }
 
