@@ -465,21 +465,27 @@ let exec (p : Ast.Program.t) : unit =
     | (Frame.Envs []), _ -> fun _ -> impossible "exec with empty environment frame."
     | eta, context -> function
       | E.Var x -> (Frame.lookup eta x, eta)
-      | E.Num n -> (Value.V_Int (n, Low), eta)
-      | E.Bool b -> (Value.V_Bool (b, Low), eta)
-      | E.Str s -> (Value.V_Str (s, Low), eta)
+      | E.Num n -> (Value.V_V (V_Int n, Low), eta)
+      | E.Bool b -> (Value.V_V (V_Bool b, Low), eta)
+      | E.Str s -> (Value.V_V (V_Str s, Low), eta)
       | E.Assign (x, e) ->
-        let (v, eta') = eval (eta, context) e
-        in (v, Frame.set eta' x v)
+        let (v, eta') = eval (eta, context) e in 
+        begin match v with
+        | V_Undefined -> impossible "attempted to assign value with Undefined"
+        | V_V (p, l) -> (V_V (p, Sec.combine l context), Frame.set eta' x (V_V (p, Sec.combine l context)))
+        end
       | E.Binop (op, e, e') ->
-        let (v, eta') = eval eta e in
-        let (v', eta'') = eval eta' e' in
-        (binop op v v', eta'')
+        let (v, eta') = eval (eta, context) e in
+        let (v', eta'') = eval (eta', context) e' in
+        begin match (binop op v v') with 
+        | V_Undefined -> impossible "binop result in Undefined"
+        | V_V (p, l) -> (V_V (p, Sec.combine l context), eta'')
+        end
       | E.Neg e ->
-        let (v, eta') = eval eta e in
+        let (v, eta') = eval (eta, context) e in
         (
           match v with
-          | Value.V_Int (n, l) -> (Value.V_Int (-n, l), eta')
+          | Value.V_V (V_Int n, l) -> (Value.V_V (V_Int (-n), l), eta')
           | _ -> raise @@
                  TypeError (
                    Printf.sprintf "Bad operand type: -%s" 
@@ -487,10 +493,10 @@ let exec (p : Ast.Program.t) : unit =
                  )
         )
       | E.Not e ->
-        let (v, eta') = eval eta e in
+        let (v, eta') = eval (eta, context) e in
         (
           match v with
-          | Value.V_Bool (b, l) -> (Value.V_Bool (not b, l), eta')
+          | Value.V_V (V_Bool b, l) -> (Value.V_V (V_Bool (not b), l), eta')
           | _ -> raise @@
                  TypeError (
                    Printf.sprintf "Bad operand type: !%s" 
@@ -500,7 +506,7 @@ let exec (p : Ast.Program.t) : unit =
       | E.Call(f, es) ->
         let (vs, eta') =
           List.fold_left
-            (fun (vs, eta) e -> let (v, eta') = eval eta e in (v :: vs, eta'))
+            (fun (vs, eta) e -> let (v, eta') = eval (eta, context) e in (v :: vs, eta'))
             ([], eta)
             es
         in (do_call f (List.rev vs), eta')
@@ -512,16 +518,17 @@ let exec (p : Ast.Program.t) : unit =
    *)
   and do_decs 
       (eta : Frame.t) 
-      (decs : (Ast.Id.t * Ast.Expression.t option) list) : Frame.t =
+      (decs : (Ast.Id.t * Ast.Expression.t option) list)
+      (context : Sec.t) : Frame.t =
     match decs with
     | [] -> eta
     | (x, None) :: decs -> 
       let eta' = Frame.declare eta x V_Undefined in
-      do_decs eta' decs
+      do_decs eta' decs context
     | (x, Some e) :: decs ->
-      let (v, eta') = eval eta e in 
+      let (v, eta') = eval (eta, context) e in 
       let eta'' = Frame.declare eta' x v in
-      do_decs eta'' decs
+      do_decs eta'' decs context
 
   (* exec_one η s = η', where s ├ η → η'.
    *)
