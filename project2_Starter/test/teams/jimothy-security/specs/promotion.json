@@ -1,6 +1,6 @@
 {
     "file":     "promotion1.imp",
-    "input":    ["0, 3, 0"],
+    "input":    ["0", "3", "0"],
     "output":   ["true"]
 }
 

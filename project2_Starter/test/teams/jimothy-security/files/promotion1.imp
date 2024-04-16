@@ -13,6 +13,6 @@ function main() {
         z = z + 1;
     }
 
-    print(z);
+    print_int(z);
     return;
 }

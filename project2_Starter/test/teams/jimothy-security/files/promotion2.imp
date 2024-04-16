@@ -12,6 +12,6 @@ function main() {
         z = false;
     }
 
-    print(z);
+    print_bool(z);
     return;
 }
