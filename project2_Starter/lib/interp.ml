@@ -63,13 +63,16 @@ end
 (* Values.
  *)
 module Value = struct
-  type t = 
-    | V_Undefined
-    | V_None of Sec.t
-    | V_Int of int * Sec.t
-    | V_Bool of bool * Sec.t
-    | V_Str of string * Sec.t
+  type prim = 
+    | V_None
+    | V_Int of int
+    | V_Bool of bool
+    | V_Str of string
     [@@deriving show]
+
+  type t =
+    | V_Undefined
+    | V_V of prim * Sec.t
 
   (* to_string v = a string representation of v (more human-readable than
    * `show`.
@@ -77,10 +80,10 @@ module Value = struct
   let to_string (v : t) : string =
     match v with
     | V_Undefined -> "?"
-    | V_None _l -> "None"
-    | V_Int (n, _l) -> Int.to_string n
-    | V_Bool (b, _l) -> Bool.to_string b
-    | V_Str (s, _l) -> s
+    | V_V (V_None, _l) -> "None"
+    | V_V (V_Int n, _l) -> Int.to_string n
+    | V_V (V_Bool b, _l) -> Bool.to_string b
+    | V_V (V_Str s, _l) -> s
 end
 
 module Frame = struct
@@ -244,116 +247,116 @@ module Api = struct
     [
       ("print_bool", fun vs ->
         match vs with
-        | [Value.V_Bool (n, Low)] -> 
-          outputnl (!out_channel) (Bool.to_string n) ; Value.V_None Low
-        | [Value.V_Bool (_n, High)] -> raise @@ SecurityError
+        | [Value.V_V (V_Bool n, Low)] -> 
+          outputnl (!out_channel) (Bool.to_string n) ; Value.V_V (V_None, Low)
+        | [Value.V_V (_n, High)] -> raise @@ SecurityError
         | _ -> raise @@ TypeError "Bad argument type for print_bool_s"
       )
     ; ("get_bool", fun vs ->
         match vs with
-        | [] -> Value.V_Bool (Scanf.bscanf !in_channel " %B" (fun b -> b), Low)
+        | [] -> Value.V_V (V_Bool (Scanf.bscanf !in_channel " %B" (fun b -> b)), Low)
         | _ -> raise @@ TypeError "Bad argument type for get_bool"
       )
     ; ("prompt_bool", fun vs ->
         match vs with
-        | [Value.V_Str (s, Low)] ->
+        | [Value.V_V (V_Str s, Low)] ->
           if !show_prompts then output (!out_channel) s else () ;
-            Value.V_Bool (Scanf.bscanf !in_channel " %B" (fun b -> b), Low)
-        | [Value.V_Str (_s, High)] -> raise @@ SecurityError
+            Value.V_V (V_Bool (Scanf.bscanf !in_channel " %B" (fun b -> b)), Low)
+        | [Value.V_V (_s, High)] -> raise @@ SecurityError
         | _ -> raise @@ TypeError "Bad argument type for prompt_bool"
       )
     ; ("print_int", fun vs ->
         match vs with
-        | [Value.V_Int (n, Low)] -> 
-          outputnl (!out_channel) (Int.to_string n) ; Value.V_None Low
-        | [Value.V_Int (_n, High)] -> raise @@ SecurityError
+        | [Value.V_V (V_Int n, Low)] -> 
+          outputnl (!out_channel) (Int.to_string n) ; Value.V_V (V_None, Low)
+        | [Value.V_V (_n, High)] -> raise @@ SecurityError
         | _ -> raise @@ TypeError "Bad argument type for print_int"
       )
     ; ("get_int", fun vs ->
         match vs with
-        | [] -> Value.V_Int (Scanf.bscanf !in_channel " %d" (fun n -> n), Low)
+        | [] -> Value.V_V (V_Int (Scanf.bscanf !in_channel " %d" (fun n -> n)), Low)
         | _ -> raise @@ TypeError "Bad argument type for get_int"
       )
     ; ("prompt_int", fun vs ->
         match vs with
-        | [Value.V_Str (s, Low)] ->
+        | [Value.V_V (V_Str s, Low)] ->
           if !show_prompts then output (!out_channel) s else () ;
-            Value.V_Int (Scanf.bscanf !in_channel " %d" (fun n -> n), Low)
-        | [Value.V_Int (_s, High)] -> raise @@ SecurityError
+            Value.V_V (V_Int (Scanf.bscanf !in_channel " %d" (fun n -> n)), Low)
+        | [Value.V_V (_s, High)] -> raise @@ SecurityError
         | _ -> raise @@ TypeError "Bad argument type for prompt_int"
       )
     ; ("print_str", fun vs ->
          match vs with
-         | [Value.V_Str (s, Low)] -> 
-           outputnl (!out_channel) s ; Value.V_None Low
-         | [Value.V_Str (_s, High)] -> raise @@ SecurityError
+         | [Value.V_V (V_Str s, Low)] -> 
+           outputnl (!out_channel) s ; Value.V_V (V_None, Low)
+         | [Value.V_V (_s, High)] -> raise @@ SecurityError
          | _ -> raise @@ TypeError "Bad argument type for print_s"
       )
     ; ("get_str", fun vs ->
         match vs with
-        | [] -> Value.V_Str (Scanf.bscanf !in_channel "%s" (fun s -> s), Low)
+        | [] -> Value.V_V (V_Str (Scanf.bscanf !in_channel "%s" (fun s -> s)), Low)
         | _ -> raise @@ TypeError "Bad argument type for get_str"
       )
     ; ("prompt_str", fun vs ->
         match vs with
-        | [Value.V_Str (s, Low)] ->
+        | [Value.V_V (V_Str s, Low)] ->
           if !show_prompts then output (!out_channel) s else () ;
-            Value.V_Str (Scanf.bscanf !in_channel " %s" (fun s -> s), Low)
-        | [Value.V_Str (_s, High)] -> raise @@ SecurityError
+            Value.V_V (V_Str (Scanf.bscanf !in_channel " %s" (fun s -> s)), Low)
+        | [Value.V_V (_s, High)] -> raise @@ SecurityError
         | _ -> raise @@ TypeError "Bad argument type for prompt_str"
       )
     ; ("print_bool_s", fun vs ->
         match vs with
-        | [Value.V_Bool (n, _l)] -> 
-          outputnl (!out_channel) (Bool.to_string n) ; Value.V_None High
+        | [Value.V_V (V_Bool n, _l)] -> 
+          outputnl (!out_channel) (Bool.to_string n) ; Value.V_V (V_None, High)
         | _ -> raise @@ TypeError "Bad argument type for print_bool"
       )
     ; ("get_bool_s", fun vs ->
         match vs with
-        | [] -> Value.V_Bool (Scanf.bscanf !in_channel " %B" (fun b -> b), High)
+        | [] -> Value.V_V (V_Bool (Scanf.bscanf !in_channel " %B" (fun b -> b)), High)
         | _ -> raise @@ TypeError "Bad argument type for get_bool_s"
       )
     ; ("prompt_bool_s", fun vs ->
         match vs with
-        | [Value.V_Str (s, _l)] ->
+        | [Value.V_V (V_Str s, _l)] ->
           if !show_prompts then output (!out_channel) s else () ;
-            Value.V_Bool (Scanf.bscanf !in_channel " %B" (fun b -> b), High)
+            Value.V_V (V_Bool (Scanf.bscanf !in_channel " %B" (fun b -> b)), High)
         | _ -> raise @@ TypeError "Bad argument type for prompt_bool_s"
       )
     ; ("print_int_s", fun vs ->
         match vs with
-        | [Value.V_Int (n, _l)] -> 
-          outputnl (!out_channel) (Int.to_string n) ; Value.V_None High
+        | [Value.V_V (V_Int n, _l)] -> 
+          outputnl (!out_channel) (Int.to_string n) ; Value.V_V (V_None, High)
         | _ -> raise @@ TypeError "Bad argument type for print_int_s"
       )
     ; ("get_int_s", fun vs ->
         match vs with
-        | [] -> Value.V_Int (Scanf.bscanf !in_channel " %d" (fun n -> n), High)
+        | [] -> Value.V_V (V_Int (Scanf.bscanf !in_channel " %d" (fun n -> n)), High)
         | _ -> raise @@ TypeError "Bad argument type for get_int_s"
       )
     ; ("prompt_int_s", fun vs ->
         match vs with
-        | [Value.V_Str (s, _l)] ->
+        | [Value.V_V (V_Str s, _l)] ->
           if !show_prompts then output (!out_channel) s else () ;
-            Value.V_Int (Scanf.bscanf !in_channel " %d" (fun n -> n), High)
+            Value.V_V (V_Int (Scanf.bscanf !in_channel " %d" (fun n -> n)), High)
         | _ -> raise @@ TypeError "Bad argument type for prompt_int_s"
       )
     ; ("print_str_s", fun vs ->
          match vs with
-         | [Value.V_Str (s, _l)] -> 
-           outputnl (!out_channel) s ; Value.V_None High
+         | [Value.V_V (V_Str s, _l)] -> 
+           outputnl (!out_channel) s ; Value.V_V (V_None, High)
          | _ -> raise @@ TypeError "Bad argument type for print_str_s"
       )
     ; ("get_str_s", fun vs ->
         match vs with
-        | [] -> Value.V_Str (Scanf.bscanf !in_channel "%s" (fun s -> s), High)
+        | [] -> Value.V_V (V_Str (Scanf.bscanf !in_channel "%s" (fun s -> s)), High)
         | _ -> raise @@ TypeError "Bad argument type for get_str_s"
       )
     ; ("prompt_str_s", fun vs ->
         match vs with
-        | [Value.V_Str (s, _l)] ->
+        | [Value.V_V (V_Str s, _l)] ->
           if !show_prompts then output (!out_channel) s else () ;
-            Value.V_Str (Scanf.bscanf !in_channel " %s" (fun s -> s), High)
+            Value.V_V (V_Str (Scanf.bscanf !in_channel " %s" (fun s -> s)), High)
         | _ -> raise @@ TypeError "Bad argument type for prompt_str_s"
       )
     ] |> List.to_seq |> IdentMap.of_seq
@@ -377,27 +380,27 @@ end
  *)
 let binop (op : E.binop) (v : Value.t) (v' : Value.t) : Value.t =
   match (op, v, v') with
-  | (E.Plus, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Int (n + n', Sec.combine l l')
-  | (E.Minus, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Int (n - n', Sec.combine l l')
-  | (E.Times, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Int (n * n', Sec.combine l l')
-  | (E.Div, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Int (n / n', Sec.combine l l')
-  | (E.Mod, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Int (n mod n', Sec.combine l l')
+  | (E.Plus, Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Int (n + n'), Sec.combine l l')
+  | (E.Minus, Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Int (n - n'), Sec.combine l l')
+  | (E.Times, Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Int (n * n'), Sec.combine l l')
+  | (E.Div,  Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Int (n / n'), Sec.combine l l')
+  | (E.Mod,  Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Int (n mod n'), Sec.combine l l')
   
-  | (E.And, Value.V_Bool (b, l), Value.V_Bool (b', l')) -> Value.V_Bool (b && b', Sec.combine l l')
-  | (E.Or, Value.V_Bool (b, l), Value.V_Bool (b', l')) -> Value.V_Bool (b || b', Sec.combine l l')
+  | (E.And, Value.V_V (V_Bool b, l), Value.V_V (V_Bool b', l')) -> Value.V_V (V_Bool (b && b'), Sec.combine l l')
+  | (E.Or, Value.V_V (V_Bool b, l), Value.V_V (V_Bool b', l')) -> Value.V_V (V_Bool (b || b'), Sec.combine l l')
 
-  | (E.Eq, Value.V_Int (v, l), Value.V_Int (v', l')) -> Value.V_Bool (v = v', Sec.combine l l')
-  | (E.Eq, Value.V_Str (v, l), Value.V_Str (v', l')) -> Value.V_Bool (v = v', Sec.combine l l')
-  | (E.Eq, Value.V_Bool (v, l), Value.V_Bool (v', l')) -> Value.V_Bool (v = v', Sec.combine l l')
+  | (E.Eq, Value.V_V (V_Int v, l), Value.V_V (V_Int v', l')) -> Value.V_V (V_Bool (v = v'), Sec.combine l l')
+  | (E.Eq, Value.V_V (V_Str v, l), Value.V_V (V_Str v', l')) -> Value.V_V (V_Bool (v = v'), Sec.combine l l')
+  | (E.Eq, Value.V_V (V_Bool v, l), Value.V_V (V_Bool v', l')) -> Value.V_V (V_Bool (v = v'), Sec.combine l l')
 
-  | (E.Ne, Value.V_Int (v, l), Value.V_Int (v', l')) -> Value.V_Bool (v <> v', Sec.combine l l')
-  | (E.Ne, Value.V_Str (v, l), Value.V_Str (v', l')) -> Value.V_Bool (v <> v', Sec.combine l l')
-  | (E.Ne, Value.V_Bool (v, l), Value.V_Bool (v', l')) -> Value.V_Bool (v <> v', Sec.combine l l')
+  | (E.Ne, Value.V_V (V_Int v, l), Value.V_V (V_Int v', l')) -> Value.V_V (V_Bool (v <> v'), Sec.combine l l')
+  | (E.Ne, Value.V_V (V_Str v, l), Value.V_V (V_Str v', l')) -> Value.V_V (V_Bool (v <> v'), Sec.combine l l')
+  | (E.Ne, Value.V_V (V_Bool v, l), Value.V_V (V_Bool v', l')) -> Value.V_V (V_Bool (v <> v'), Sec.combine l l')
 
-  | (E.Lt, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Bool (n < n', Sec.combine l l')
-  | (E.Le, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Bool (n <= n', Sec.combine l l')
-  | (E.Gt, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Bool (n > n', Sec.combine l l')
-  | (E.Ge, Value.V_Int (n, l), Value.V_Int (n', l')) -> Value.V_Bool (n >= n', Sec.combine l l')
+  | (E.Lt, Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Bool (n < n'), Sec.combine l l')
+  | (E.Le, Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Bool (n <= n'), Sec.combine l l')
+  | (E.Gt, Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Bool (n > n'), Sec.combine l l')
+  | (E.Ge, Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Bool (n >= n'), Sec.combine l l')
   | _ -> raise @@
          TypeError (
            Printf.sprintf "Bad operand types: %s %s %s"
@@ -458,15 +461,15 @@ let exec (p : Ast.Program.t) : unit =
    * Raises:  Failure if η is a return frame or empty environment frame.
    *)
   and eval = function
-    | Frame.Return _ -> fun _ -> impossible "eval with Return frame."
-    | Frame.Envs [] -> fun _ -> impossible "exec with empty environment frame."
-    | eta -> function
+    | (Frame.Return _), _ -> fun _ -> impossible "eval with Return frame."
+    | (Frame.Envs []), _ -> fun _ -> impossible "exec with empty environment frame."
+    | eta, context -> function
       | E.Var x -> (Frame.lookup eta x, eta)
       | E.Num n -> (Value.V_Int (n, Low), eta)
       | E.Bool b -> (Value.V_Bool (b, Low), eta)
       | E.Str s -> (Value.V_Str (s, Low), eta)
       | E.Assign (x, e) ->
-        let (v, eta') = eval eta e
+        let (v, eta') = eval (eta, context) e
         in (v, Frame.set eta' x v)
       | E.Binop (op, e, e') ->
         let (v, eta') = eval eta e in
