@@ -6,7 +6,7 @@ function main() {
 
     while (y < 5) do {
         if (y == x) then {
-            print(y);
+            print_int(y);
             return;
         }
 

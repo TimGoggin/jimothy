@@ -3,7 +3,7 @@ function main() {
     var s = get_str_s();
     var x = 0;
 
-    if (s = "hi") then {
+    if (s == "hi") then {
         x = 5;
     }
 

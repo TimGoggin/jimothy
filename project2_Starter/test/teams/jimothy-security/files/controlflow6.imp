@@ -12,6 +12,6 @@ function main() {
         y = y + 1;
     }
 
-    print(y);
+    print_int(y);
     return;
 }
