@@ -477,7 +477,7 @@ let exec (p : Ast.Program.t) : unit =
       | E.Assign (x, e) ->
         let (v, eta') = eval (eta, context) e in 
         begin match v with
-        | V_Undefined -> impossible "attempted to assign value with Undefined"
+        | V_Undefined -> raise @@ UnboundVariable "attempted to assign value with Undefined"
         | V_V (p, l) -> (V_V (p, Sec.combine l context), Frame.set eta' x (V_V (p, Sec.combine l context)))
         end
       | E.Binop (op, e, e') ->
