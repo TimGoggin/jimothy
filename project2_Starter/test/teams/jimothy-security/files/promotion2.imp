@@ -1,0 +1,17 @@
+
+function main() {
+    var y = false;
+    var z = true;
+    var x = get_bool_s();
+
+    if (x) then {
+        y = true;
+    }
+
+    if (!y) then {
+        z = false;
+    }
+
+    print(z);
+    return;
+}

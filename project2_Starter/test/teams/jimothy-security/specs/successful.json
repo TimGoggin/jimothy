@@ -33,9 +33,3 @@
     "input":    ["true"],
     "output":   ["true"]
 }
-
-{
-    "file":     "success6.imp",
-    "input":    ["0, 3, 0"],
-    "output":   ["true"]
-}

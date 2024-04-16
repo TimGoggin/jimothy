@@ -1,0 +1,17 @@
+{
+    "file":     "promotion1.imp",
+    "input":    ["0, 3, 0"],
+    "output":   ["true"]
+}
+
+{
+    "file":     "promotion2.imp",
+    "input":    ["true"],
+    "output":   ["true"]
+}
+
+{
+    "file":     "promotion2.imp",
+    "input":    ["false"],
+    "except":   "SecurityError"
+}
