@@ -1,18 +1,17 @@
 
 function main() {
-    var x = get_int_s();
-    var y = get_int_s();
-    var z = get_int();
+    var y = false;
+    var z = true;
+    var x = get_bool_s();
 
-    while (z < 5) do {
-        if (x == y) then {
-            return;
-        }
-
-        x = x + 1;
-        z = z + 1;
+    if (x) then {
+        y = true;
     }
 
-    print_int(z);
+    if (!y) then {
+        z = false;
+    }
+
+    print_bool(z);
     return;
 }
