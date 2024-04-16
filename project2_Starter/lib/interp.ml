@@ -439,13 +439,13 @@ let exec (p : Ast.Program.t) : unit =
    *    fs[f] = ([x_0,...,x_{n-1}], body),     if f ∈ dom fs
    *  = Api.do_call f vs,                      otherwise
    *)
-  let rec do_call (f : Ast.Id.t) (vs : Value.t list) : Value.t =
+  let rec do_call (f : Ast.Id.t) (vs : Value.t list) (context : Sec.t) : Value.t =
     try
       let (params, body) = IdentMap.find f fs in
       let eta = Frame.Envs [
         List.combine params vs |> List.to_seq |> IdentMap.of_seq
       ] in
-      let eta' = exec_many eta body in
+      let eta' = exec_many eta body context in
       begin
         match eta' with
         | Frame.Return v -> v
@@ -509,7 +509,7 @@ let exec (p : Ast.Program.t) : unit =
             (fun (vs, eta) e -> let (v, eta') = eval (eta, context) e in (v :: vs, eta'))
             ([], eta)
             es
-        in (do_call f (List.rev vs), eta')
+        in (do_call f (List.rev vs) context, eta')
 
   (* do_decs η [..., (x, Some e), ...] = η'', where η'' is obtained by adding
    * x → v to η', where η ├ e ↓ (v, η').
@@ -533,27 +533,27 @@ let exec (p : Ast.Program.t) : unit =
   (* exec_one η s = η', where s ├ η → η'.
    *)
   and exec_one = function
-    | Frame.Return _ -> fun _ -> impossible "exec with Return frame."
-    | Frame.Envs [] -> fun _ -> impossible "exec with empty environment frame."
-    | eta -> function
+    | (Frame.Return _), _ -> fun _ -> impossible "exec with Return frame."
+    | (Frame.Envs []), _ -> fun _ -> impossible "exec with empty environment frame."
+    | eta, context -> function
       | S.Skip -> eta
-      | S.VarDec decs -> do_decs eta decs
+      | S.VarDec decs -> do_decs eta decs context
       | S.Expr e ->
-        let (_, eta') = eval eta e in
+        let (_, eta') = eval (eta, context) e in
         eta'
       | S.Block ss ->
         let eta' = Frame.push eta in
         begin
-          match exec_many eta' ss with
+          match exec_many eta' ss context with
           | Return v -> Return v
           | eta'' -> Frame.pop eta''
         end
       | S.If(e, s0, s1) ->
-        let (v, eta') = eval eta e in
+        let (v, eta') = eval (eta, context) e in
         begin
           match v with
-          | Value.V_Bool true -> exec_one eta' s0
-          | Value.V_Bool false -> exec_one eta' s1
+          | Value.V_V (V_Bool true, level) -> exec_one (eta', Sec.combine level context) s0
+          | Value.V_V (V_Bool false, level) -> exec_one (eta', Sec.combine level context) s1
           | _ -> raise @@ TypeError (
                    "Conditional test not a boolean value:  " ^ Value.to_string v
                  )
@@ -562,12 +562,12 @@ let exec (p : Ast.Program.t) : unit =
         (* dowhile η = η', where while e do body ├ η → η'.
          *)
         let rec dowhile (eta : Frame.t) : Frame.t =
-          let (v, eta') = eval eta e in
+          let (v, eta') = eval (eta, context) e in
           match v with
-          | Value.V_Bool false -> eta'
-          | Value.V_Bool true ->
+          | Value.V_V (V_Bool false, _) -> eta'
+          | Value.V_V (V_Bool true, level) ->
             begin
-              match exec_one eta' body with
+              match exec_one (eta', Sec.combine level context) body with
               | Frame.Return v -> Frame.Return v
               | eta'' -> dowhile eta''
             end
@@ -577,10 +577,13 @@ let exec (p : Ast.Program.t) : unit =
         in
         dowhile eta
       | S.Return (Some e) ->
-        let (v, _) = eval eta e in
-        Frame.Return v
+        let (v, _) = eval (eta, context) e in
+        begin match v with 
+        | V_Undefined -> impossible "returned Undefined"
+        | V_V (p, l) -> Frame.Return (Value.V_V (p, Sec.combine l context))
+        end
       | S.Return None ->
-        Frame.Return Value.V_None
+        Frame.Return (Value.V_V (V_None, context))
 
   (* exec_many η₀ [s_0,...,s_{n-1}] = η',
    *   if s_0 ├ η₀ → η₁
@@ -596,17 +599,17 @@ let exec (p : Ast.Program.t) : unit =
    *      and η_i is not a return frame for any i<j and η' is a return
    *      frame.
    *)
-  and exec_many (eta : Frame.t) (ss : Ast.Stm.t list) : Frame.t =
+  and exec_many (eta : Frame.t) (ss : Ast.Stm.t list) (context : Sec.t) : Frame.t =
     match ss with
         | [] -> eta
         | s :: ss ->
           begin
-            match exec_one eta s with
+            match exec_one (eta, context) s with
             | Frame.Return v -> Frame.Return v
-            | eta' -> exec_many eta' ss
+            | eta' -> exec_many eta' ss context
           end
 
   in
-    let _ = eval Frame.base (E.Call ("main", [])) in
+    let _ = eval (Frame.base, Low) (E.Call ("main", [])) in
     ()
 
