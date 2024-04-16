@@ -375,14 +375,20 @@ module Api = struct
 
 end
 
+let rec strMult (s : string) (n : int) : string =
+  if n >= 1 then s ^ strMult s (n - 1) else ""
+
 (* binop op v v' = the result of applying the metalanguage operation
  * corresponding to `op` to v and v'.
  *)
 let binop (op : E.binop) (v : Value.t) (v' : Value.t) : Value.t =
   match (op, v, v') with
   | (E.Plus, Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Int (n + n'), Sec.combine l l')
+  | (E.Plus, Value.V_V (V_Str s, l), Value.V_V (V_Str s', l')) -> Value.V_V (V_Str (s ^ s'), Sec.combine l l')
   | (E.Minus, Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Int (n - n'), Sec.combine l l')
   | (E.Times, Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Int (n * n'), Sec.combine l l')
+  | (E.Times, Value.V_V (V_Int n, l), Value.V_V (V_Str s, l')) -> Value.V_V (V_Str (strMult s n), Sec.combine l l')
+  | (E.Times, Value.V_V (V_Str s, l), Value.V_V (V_Int n, l')) -> Value.V_V (V_Str (strMult s n), Sec.combine l l')
   | (E.Div,  Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Int (n / n'), Sec.combine l l')
   | (E.Mod,  Value.V_V (V_Int n, l), Value.V_V (V_Int n', l')) -> Value.V_V (V_Int (n mod n'), Sec.combine l l')
   
