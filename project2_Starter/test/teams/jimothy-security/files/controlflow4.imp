@@ -6,6 +6,8 @@ function main() {
 
     if (b) then {
         x = x + y;
+    } else {
+        x = x;
     }
 
     print_int(x);

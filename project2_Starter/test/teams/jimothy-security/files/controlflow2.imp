@@ -5,6 +5,8 @@ function main() {
 
     if (y < 5) then {
         x = 5;
+    } else {
+        x = 7;
     }
 
     print_int(x);

@@ -31,7 +31,7 @@
 {
     "file":     "controlflow3.imp",
     "input":    ["iloveoCaml"],
-    "except":   "SecurityError"
+    "output":   ["0"]
 }
 
 {

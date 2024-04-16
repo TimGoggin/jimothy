@@ -5,6 +5,8 @@ function main() {
 
     if (b) then {
         x = 5;
+    } else {
+        x = x;
     }
 
     print_int(x);

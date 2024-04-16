@@ -122,7 +122,7 @@ module Frame = struct
    * Raises Failure if η is a return frame.
    * Raises UnboundVariable if x not in dom σ_i for any i.
    *)
-  let lookup (eta : t) (x : Ast.Id.t) : Value.t =
+  let lookup (eta : t) (x : Ast.Id.t) (context : Sec.t) : Value.t =
     (* lookup' [σ_0,...,σ_{n-1}] = v, where σ_i(x) = v and x is not in the
      * domain of any σ_j for j<i.
      *
@@ -135,7 +135,10 @@ module Frame = struct
           try IdentMap.find x sigma with
           | Not_found -> lookup' sigmas
     in match eta with
-    | Envs eta -> lookup' eta
+    | Envs eta -> begin match (lookup' eta) with
+      | Value.V_V (p, l) -> Value.V_V (p, Sec.combine l context)
+      | _ -> raise @@ UnboundVariable x
+      end
     | Return _ -> impossible "Bad frame"
 
   (* set η  x v = Envs [σ_0,...,σ_i[x→v],...], 
@@ -470,7 +473,7 @@ let exec (p : Ast.Program.t) : unit =
     | (Frame.Return _), _ -> fun _ -> impossible "eval with Return frame."
     | (Frame.Envs []), _ -> fun _ -> impossible "exec with empty environment frame."
     | eta, context -> function
-      | E.Var x -> (Frame.lookup eta x, eta)
+      | E.Var x -> (Frame.lookup eta x context, eta)
       | E.Num n -> (Value.V_V (V_Int n, Low), eta)
       | E.Bool b -> (Value.V_V (V_Bool b, Low), eta)
       | E.Str s -> (Value.V_V (V_Str s, Low), eta)
