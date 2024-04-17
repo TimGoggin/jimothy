@@ -73,6 +73,7 @@ module Value = struct
   type t =
     | V_Undefined
     | V_V of prim * Sec.t
+    [@@deriving show]
 
   (* to_string v = a string representation of v (more human-readable than
    * `show`.
