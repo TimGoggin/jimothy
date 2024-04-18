@@ -7,5 +7,5 @@
 {
     "file":     "promotion1.imp",
     "input":    ["false"],
-    "output":   ["false"]
+    "except":   "SecurityError"
 }
