@@ -370,11 +370,14 @@ module Api = struct
    *
    * Raises ApiError f: if f is not an API function.
    *)
-  let do_call (f : string) (vs : Value.t list) : Value.t =
-    try
-      IdentMap.find f api vs
-    with
-    | Not_found -> raise @@ ApiError f
+  let do_call (f : string) (vs : Value.t list) (context : Sec.t) : Value.t =
+    match context with
+    | Sec.High -> raise @@ SecurityError
+    | Sec.Low ->
+      try
+        IdentMap.find f api vs
+      with
+      | Not_found -> raise @@ ApiError f
 
 
 end
@@ -463,7 +466,7 @@ let exec (p : Ast.Program.t) : unit =
       end
     with
     | Not_found -> 
-      try Api.do_call f vs with
+      try Api.do_call f vs context with
       | Api.ApiError _ -> raise @@ UndefinedFunction f
 
   (* eval η e = (v, η'), where η ├ e ↓ (v, η').
