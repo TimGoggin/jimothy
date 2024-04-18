@@ -19,7 +19,7 @@
 {
     "file":     "functionsec3.imp",
     "input":    ["3"],
-    "output":   ["hi"]
+    "except":   "SecurityError"
 }
 
 {
@@ -37,7 +37,7 @@
 {
     "file":     "functionsec5.imp",
     "input":    ["3", "3"],
-    "output":   ["3"]
+    "except":   "SecurityError"
 }
 
 {
