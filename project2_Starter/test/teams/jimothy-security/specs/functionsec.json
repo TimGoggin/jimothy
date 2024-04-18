@@ -21,3 +21,15 @@
     "input":    ["3"],
     "output":   ["hi"]
 }
+
+{
+    "file":     "functionsec4.imp",
+    "input":    ["3", "0"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "functionsec4.imp",
+    "input":    ["3", "6"],
+    "output":   ["hi"]
+}
