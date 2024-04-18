@@ -1,0 +1,16 @@
+function helper(x, y) {
+    if (x > 5) then {
+        return x * y;
+    }
+
+    return y;
+}
+
+function main() {
+    var x = get_int_s();
+    var y = get_int();
+
+    print_int(helper(x, y));
+
+    return;
+}

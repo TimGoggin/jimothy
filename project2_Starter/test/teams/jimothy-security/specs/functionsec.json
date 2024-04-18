@@ -33,3 +33,27 @@
     "input":    ["3", "6"],
     "output":   ["hi"]
 }
+
+{
+    "file":     "functionsec5.imp",
+    "input":    ["3", "3"],
+    "output":   ["3"]
+}
+
+{
+    "file":     "functionsec5.imp",
+    "input":    ["6", "3"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "functionsec6.imp",
+    "input":    ["3", "3"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "functionsec6.imp",
+    "input":    ["3", "6"],
+    "except":   "SecurityError"
+}
