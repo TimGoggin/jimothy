@@ -31,7 +31,7 @@
 {
     "file":     "controlflow3.imp",
     "input":    ["iloveoCaml"],
-    "output":   ["0"]
+    "except":   "SecurityError"
 }
 
 {
@@ -67,7 +67,7 @@
 {
     "file":     "controlflow6.imp",
     "input":    ["8"],
-    "output":   ["5"]
+    "except":   "SecurityError"
 }
 
 
