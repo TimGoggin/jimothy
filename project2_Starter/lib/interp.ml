@@ -474,7 +474,7 @@ let exec (p : Ast.Program.t) : unit =
     | (Frame.Return _), _ -> fun _ -> impossible "eval with Return frame."
     | (Frame.Envs []), _ -> fun _ -> impossible "exec with empty environment frame."
     | eta, context -> function
-      | E.Var x -> let v = Frame.lookup eta x context in v, Frame.set eta x v
+      | E.Var x -> let v = Frame.lookup eta x context in v, eta
       | E.Num n -> (Value.V_V (V_Int n, Low), eta)
       | E.Bool b -> (Value.V_V (V_Bool b, Low), eta)
       | E.Str s -> (Value.V_V (V_Str s, Low), eta)
