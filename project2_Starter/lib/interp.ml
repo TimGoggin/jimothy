@@ -483,7 +483,7 @@ let exec (p : Ast.Program.t) : unit =
         begin match v with
         | V_Undefined -> raise @@ UnboundVariable "attempted to assign value with Undefined"
         | V_V (p, l) -> 
-          try begin match Frame.lookup eta' x context with
+          try begin match Frame.lookup eta' x Sec.Low with
             | V_Undefined -> impossible "UnboundVariable within try block"
             | V_V (_, l') -> begin match (Sec.combine l l'), context with
               | Sec.Low, Sec.High -> raise @@ SecurityError
