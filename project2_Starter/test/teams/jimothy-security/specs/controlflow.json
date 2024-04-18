@@ -67,7 +67,7 @@
 {
     "file":     "controlflow6.imp",
     "input":    ["8"],
-    "except":   "SecurityError"
+    "output":   ["5"]
 }
 
 

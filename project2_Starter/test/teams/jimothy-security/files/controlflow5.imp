@@ -13,5 +13,6 @@ function main() {
         y = y + 1;
     }
 
+    print_int(x);
     return;
 }

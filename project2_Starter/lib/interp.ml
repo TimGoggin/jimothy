@@ -483,10 +483,14 @@ let exec (p : Ast.Program.t) : unit =
         begin match v with
         | V_Undefined -> raise @@ UnboundVariable "attempted to assign value with Undefined"
         | V_V (p, l) -> 
-          begin match l, context with
-          | Sec.Low, Sec.High -> raise @@ SecurityError
-          | _, _ -> (V_V (p, Sec.combine l context), Frame.set eta' x (V_V (p, Sec.combine l context)))
+          try begin match Frame.lookup eta' x context with
+            | V_Undefined -> impossible "UnboundVariable within try block"
+            | V_V (_, l') -> begin match (Sec.combine l l'), context with
+              | Sec.Low, Sec.High -> raise @@ SecurityError
+              | _, _ -> (V_V (p, Sec.combine l context), Frame.set eta' x (V_V (p, Sec.combine l context)))
+            end
           end
+          with UnboundVariable _ -> (V_V (p, Sec.combine l context), Frame.set eta' x (V_V (p, Sec.combine l context)))
         end
       | E.Binop (op, e, e') ->
         let (v, eta') = eval (eta, context) e in
