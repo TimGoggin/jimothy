@@ -1,0 +1,23 @@
+{
+    "file":     "functionsec1.imp",
+    "input":    ["11", "3"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "functionsec2.imp",
+    "input":    ["11", "3"],
+    "output":   ["3"]
+}
+
+{
+    "file":     "functionsec3.imp",
+    "input":    ["5"],
+    "except":   "SecurityError"
+}
+
+{
+    "file":     "functionsec3.imp",
+    "input":    ["3"],
+    "output":   ["hi"]
+}

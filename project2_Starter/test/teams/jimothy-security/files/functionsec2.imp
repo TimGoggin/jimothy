@@ -1,0 +1,13 @@
+function megaPrint(x, y) {
+    print_int(x);
+    return;
+}
+
+function main() {
+    var x = get_int_s();
+    var y = get_int();
+
+    megaPrint(y, x);
+
+    return;
+}
