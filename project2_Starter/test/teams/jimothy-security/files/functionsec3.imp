@@ -14,3 +14,6 @@ function main() {
 
     return;
 }
+
+/* On input 3, this should result in a SecurityError, but the code will run without errors. */
+/* This is because of the path not taken situation. */
