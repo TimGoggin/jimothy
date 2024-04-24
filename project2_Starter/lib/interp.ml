@@ -370,10 +370,7 @@ module Api = struct
    *
    * Raises ApiError f: if f is not an API function.
    *)
-  let do_call (f : string) (vs : Value.t list) (context : Sec.t) : Value.t =
-    match context with
-    | Sec.High -> raise @@ SecurityError
-    | Sec.Low ->
+  let do_call (f : string) (vs : Value.t list) (_context : Sec.t) : Value.t =
       try
         IdentMap.find f api vs
       with
